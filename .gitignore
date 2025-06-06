@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -175,3 +176,6 @@ cython_debug/
 .env
 .env 
 ".env" 
+=======
+ignore file
+>>>>>>> origin
