@@ -36,11 +36,15 @@ class SSOBusinessTokenAuthentication(BaseAuthentication):
         
 
 class AuthenticatedBusinessUser:
-    def _init_(self, id, business_id, business_name):
+    def __init__(self, id, business_id, business_name):
         self.id = id
         self.business_id = business_id
         self.business_name = business_name
         self.is_authenticated = True  # Required by DRF
 
-    def _str_(self):
+    def __str__(self):
         return f"BusinessUser {self.business_id}"
+    
+    
+    
+    

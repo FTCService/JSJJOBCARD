@@ -1,13 +1,8 @@
 from rest_framework import serializers
-from .models import Document
+from . import models
 
-class DocumentSerializer(serializers.ModelSerializer):
-    tenth_certificate = serializers.FileField(required=False)
-    pan_card = serializers.FileField(required=False)
-    resume = serializers.FileField(required=False)
-    # ... add other fields if you want
-
+class MbrDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Document
+        model = models.MbrDocuments
         fields = '__all__'
-
+        read_only_fields = ["card_number"]

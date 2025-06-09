@@ -37,7 +37,7 @@ class SSOMemberTokenAuthentication(BaseAuthentication):
 class AuthenticatedMemberUser:
     def __init__(self, id, mbrcardno, full_name):
         self.id = id
-        self.mbrcardno = mbrcardno
+        self.mbrcardno = mbrcardno  # store mbrcardno
         self.full_name = full_name
         self.is_authenticated = True
 

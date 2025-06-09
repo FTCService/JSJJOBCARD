@@ -1,91 +1,60 @@
-import uuid
-import boto3
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from helpers.utils import get_member_details_by_mobile, get_member_details_by_card
+from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError
 from .authentication import SSOMemberTokenAuthentication
-
-from .models import Document
-from .serializers import DocumentSerializer
+from . import serializers, models
 
 
-class Documentapi(APIView):
+class MbrDocumentsAPI(APIView):
+    """
+    API to handle Member Documents (Retrieve, Upload).
+    """
     authentication_classes = [SSOMemberTokenAuthentication]
     permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(
-        operation_description="Get all documents uploaded by the authenticated member",
-        responses={200: DocumentSerializer(many=True)}
+        operation_description="Retrieve all documents of the authenticated member",
+        responses={200: serializers.MbrDocumentsSerializer()}
     )
     def get(self, request):
-        member_id = request.user.mbrcardno
-        documents = Document.objects.filter(member=member_id)
-        serializer = DocumentSerializer(documents, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        """
+        Get all documents for the authenticated member.
+        """
         
+        documents = models.MbrDocuments.objects.filter(card_number=request.user.mbrcardno).first()
+
+        if not documents:
+            return Response({"success": True, "data": {}}, status=status.HTTP_200_OK)  # Return empty dict instead of 404
+        
+        serializer = serializers.MbrDocumentsSerializer(documents)
+        return Response({"success": True, "data": serializer.data}, status=status.HTTP_200_OK)
+
     @swagger_auto_schema(
-        operation_description="Upload multiple documents and save URLs in database (direct upload to S3).",
-        request_body=DocumentSerializer,
-        responses={201: DocumentSerializer, 400: 'Validation error'}
+        operation_description="Upload or update document URLs for the authenticated member",
+        request_body=serializers.MbrDocumentsSerializer,
+        responses={200: serializers.MbrDocumentsSerializer()}
     )
     def post(self, request):
-        file_fields = [
-            'tenth_certificate',
-            'twelfth_certificate',
-            'graduation_certificate',
-            'pg_certificate',
-            'graduation_marksheet',
-            'technical_certification',
-            'language_certification',
-            'soft_skill_certification',
-            'aadhaar_card',
-            'pan_card',
-            'passport',
-            'driving_license',
-            'resume',
-            'offer_letter',
-            'personal_statement',
-        ]
-        member = request.user.mbrcardno
-        s3_client = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
-        )
+        """
+        Upload or update document URLs for the authenticated member.
+        Automatically saves card_number from request.user.
+        """
+        card_number = request.user.mbrcardno  # Get member's card number
 
-        uploaded_data = {}
+        # Get or create the document instance for this card number
+        documents, created = models.MbrDocuments.objects.get_or_create(card_number=card_number)
 
-        for field in file_fields:
-            uploaded_file = request.FILES.get(field)
-            if not uploaded_file:
-                continue
+        serializer = serializers.MbrDocumentsSerializer(documents, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save(card_number=card_number)  # Ensure the card_number is always set
+            return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
 
-            unique_filename = f"{uuid.uuid4()}_{uploaded_file.name}"
-            s3_key = f"documents/{unique_filename}"
-
-            try:
-                s3_client.upload_fileobj(
-                    Fileobj=uploaded_file,
-                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-                    Key=s3_key,
-                    ExtraArgs={'ContentType': uploaded_file.content_type}
-                )
-                s3_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{s3_key}"
-                uploaded_data[field] = s3_url
-
-            except Exception as e:
-                return Response({'error': f"Upload failed for {field}: {str(e)}"}, status=500)
-
-        if not uploaded_data:
-            return Response({'error': 'No files uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-
-        document = Document.objects.create(member=member, **uploaded_data)
-        serializer = DocumentSerializer(document)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-
-    
+        return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
