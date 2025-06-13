@@ -93,7 +93,7 @@ DATABASES = {
         "NAME": env_vars["DB_NAME"],
         "USER": env_vars["DB_USER"],
         "PASSWORD": env_vars["DB_PASSWORD"],
-        "HOST": "127.0.0.1",
+        "HOST": "jsjcardtest.cl42kik08yj6.ap-south-1.rds.amazonaws.com",
         "PORT": "5432",
     }
 }

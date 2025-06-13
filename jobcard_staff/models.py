@@ -31,8 +31,8 @@ class Job(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     # New fields for media
-    image = models.ImageField(upload_to='job_images/', null=True, blank=True)
-    video = models.FileField(upload_to='job_videos/', null=True, blank=True)
+    image = models.TextField( null=True, blank=True)
+    video = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.title} at {self.company_name}"

@@ -16,8 +16,8 @@ class JobListCreateAPIView(APIView):
     """
     API to list all jobs or create a new job post.
     """
-    # authentication_classes = [SSOUserTokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [SSOUserTokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all job postings.",
