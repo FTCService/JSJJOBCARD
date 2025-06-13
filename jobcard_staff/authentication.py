@@ -14,7 +14,7 @@ class SSOUserTokenAuthentication(BaseAuthentication):
 
         try:
             response = requests.post(
-                settings.AUTH_SERVER_URL + "/verify-token/",
+                settings.AUTH_SERVER_URL + "/user/verify-token/",
                 json={"token": token},
                 timeout=5
             )
@@ -22,11 +22,12 @@ class SSOUserTokenAuthentication(BaseAuthentication):
                 raise AuthenticationFailed("Invalid or expired token.")
 
             data = response.json()
-            user = AuthenticatedBusinessUser(
+            user = AuthenticatedAdminUser(
                 id=data["id"],
                 employee_id=data["employee_id"],
-                business_name=data["full_name"],
-                email=data["email"]
+                full_name=data["full_name"],
+                email=data["email"],
+                
             )
 
             return (user, None)
@@ -36,7 +37,7 @@ class SSOUserTokenAuthentication(BaseAuthentication):
         
         
 
-class AuthenticatedBusinessUser:
+class AuthenticatedAdminUser:
     def __init__(self, id, employee_id, full_name, email):
         self.id = id
         self.employee_id = employee_id

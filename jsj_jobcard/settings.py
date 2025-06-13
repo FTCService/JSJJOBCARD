@@ -3,6 +3,8 @@ import os
 import sys
 from dotenv import dotenv_values
 
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.append(BASE_DIR)
@@ -30,13 +32,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'rest_framework',
-    'drf_yasg',
-    'corsheaders',
     'jobcard_member',
     'jobcard_business',
     'jobcard_staff',
     'jobcard_admin',
+    'rest_framework',
+    'drf_yasg',
+    'corsheaders',
+  
 ]
 
 MIDDLEWARE = [

@@ -1,5 +1,6 @@
 from django.conf import settings
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -11,6 +12,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from .authentication import SSOMemberTokenAuthentication
 from . import serializers, models
+from jobcard_staff.models import JobApplication
+from .serializers import JobApplicationSerializer
+
+
 
 
 class MbrDocumentsAPI(APIView):
@@ -58,3 +63,50 @@ class MbrDocumentsAPI(APIView):
             return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
 
         return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
+class JobApplicationCreateView(generics.CreateAPIView):
+    authentication_classes = [SSOMemberTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    serializer_class = JobApplicationSerializer
+    queryset = JobApplication.objects.all()
+
+    @swagger_auto_schema(
+        operation_summary="Student Apply for a Job",
+        operation_description="Allows an authenticated student to apply for a job with resume upload.",
+        manual_parameters=[],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=["job", "candidate_name", "candidate_email", "location", "resume"],
+            properties={
+                'job': openapi.Schema(type=openapi.TYPE_INTEGER, description="Job ID"),
+                'candidate_name': openapi.Schema(type=openapi.TYPE_STRING),
+                'candidate_email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL),
+                'location': openapi.Schema(type=openapi.TYPE_STRING),
+                'cover_letter': openapi.Schema(type=openapi.TYPE_STRING),
+                'resume': openapi.Schema(type=openapi.TYPE_FILE),
+            }
+        )
+    )
+    def post(self, request):
+        """
+        Submit a job application for the authenticated student.
+        Automatically assigns member_id from request.user.
+        """
+        member_id = request.user.mbrcardno  # Get member ID from the logged-in student
+        data = request.data.copy()
+        data['member_id'] = member_id
+
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "success": True,
+                "message": "Job application submitted successfully.",
+                "data": serializer.data
+            }, status=status.HTTP_201_CREATED)
+
+        return Response({
+            "success": False,
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
