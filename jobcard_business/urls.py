@@ -1,6 +1,8 @@
+# urls.py
 from django.urls import path
-from jobcard_business.views import CandidateListForEmployer
+from .views import EmployerJobApplicationsView, JobMitraJobListView
 
 urlpatterns = [
-    path("employer/jobs/<int:job_id>/candidates/",CandidateListForEmployer.as_view(),name="employer-job-candidates"),
+    path('employer/applications/', EmployerJobApplicationsView.as_view(), name='employer-applications'),
+    path('job-mitra/jobs/', JobMitraJobListView.as_view(), name='job-mitra-job-list'),
 ]

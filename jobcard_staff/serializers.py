@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Job, JobApplication,  MbrDocuments
+from .models import Job, JobApplication
+from jobcard_member.models import MbrDocuments
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -12,9 +13,8 @@ class JobApplicationSerializer(serializers.ModelSerializer):
         model = JobApplication
         fields = '__all__'
         read_only_fields = ['applied_at']
-
+        
 class MbrDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = MbrDocuments
-        fields = "__all__"
-        ref_name = "StaffMbrDocuments"
+        fields = '__all__'

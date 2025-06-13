@@ -52,29 +52,3 @@ class JobApplication(models.Model):
     def __str__(self):
         return f"{self.candidate_name} applied for {self.job.title}"
     
-class MbrDocuments(models.Model):
-    candidate_name = models.CharField(max_length=100)
-    member_id = models.CharField(max_length=50)
-    
-    # Documents
-    TenthCertificate = models.TextField(blank=True, null=True)
-    TwelfthCertificate = models.TextField(blank=True, null=True)
-    GraduationCertificate = models.TextField(blank=True, null=True)
-    GraduationMarksheet = models.TextField(blank=True, null=True)
-    PgCertificate = models.TextField(blank=True, null=True)
-    UpskillCertificate = models.TextField(blank=True, null=True)
-    ItiCertificate = models.TextField(blank=True, null=True)
-    ItiMarksheet = models.TextField(blank=True, null=True)
-    DiplomaCertificate = models.TextField(blank=True, null=True)
-    DiplomaMarksheet = models.TextField(blank=True, null=True)
-    CoverLetter = models.TextField(blank=True, null=True)
-    Resume = models.TextField(blank=True, null=True)
-
-    # Links
-    AdharcardVoterid = models.TextField(blank=True, null=True)
-    LinkedinUrl = models.URLField(blank=True, null=True)
-    GithubUrl = models.URLField(blank=True, null=True)
-    OtherLink = models.URLField(blank=True, null=True)
-
-    def __str__(self):
-        return self.candidate_name
