@@ -4,11 +4,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from django.shortcuts import get_object_or_404
-
-from .models import Job, JobApplication
-from jobcard_member.models import MbrDocuments
-from .serializers import JobSerializer, JobApplicationSerializer, MbrDocumentsSerializer
+from jobcard_business.models import Job
+from . import serializers
 from .authentication import SSOUserTokenAuthentication
 
 
@@ -21,12 +18,12 @@ class JobListCreateAPIView(APIView):
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all job postings.",
-        responses={200: JobSerializer(many=True)}
+        responses={200: serializers.JobpostSerializer(many=True)},tags=["Staff"]
     )
     def get(self, request):
         try:
             jobs = Job.objects.all()
-            serializer = JobSerializer(jobs, many=True)
+            serializer = serializers.JobpostSerializer(jobs, many=True)
             return Response({
                 "success": True,
                 "message": "Job list retrieved successfully.",
@@ -37,12 +34,12 @@ class JobListCreateAPIView(APIView):
 
     @swagger_auto_schema(
         operation_description="Create a new job post.",
-        request_body=JobSerializer,
-        responses={201: JobSerializer}
+        request_body=serializers.JobpostSerializer,
+        responses={201: serializers.JobpostSerializer},tags=["Staff"]
     )
     def post(self, request):
         try:
-            serializer = JobSerializer(data=request.data)
+            serializer = serializers.JobpostSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response({
@@ -67,12 +64,12 @@ class JobDetailAPIView(APIView):
 
     @swagger_auto_schema(
         operation_description="Retrieve a job by its ID.",
-        responses={200: JobSerializer()}
+        responses={200: serializers.JobpostSerializer()},tags=["Staff"]
     )
     def get(self, request, id):
         try:
-            job = get_object_or_404(Job, id=id)
-            serializer = JobSerializer(job)
+            job = Job.objects.get(id=id)
+            serializer = serializers.JobpostSerializer(job)
             return Response({
                 "success": True,
                 "message": "Job retrieved successfully.",
@@ -80,87 +77,119 @@ class JobDetailAPIView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-class JobApplicationListAPIView(APIView):
-    """
-    Staff can view all job applications or filter by job ID.
-    """
-    authentication_classes = [SSOUserTokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
     @swagger_auto_schema(
-        operation_description="Retrieve job applications. Optionally filter by job ID.",
-        manual_parameters=[
-            openapi.Parameter(
-                'job_id',
-                openapi.IN_QUERY,
-                description="Filter applications by job ID",
-                type=openapi.TYPE_INTEGER
-            )
-        ],
-        responses={200: JobApplicationSerializer(many=True)}
+        operation_description="Update a job post by its ID.",
+        request_body=serializers.JobpostSerializer,
+        responses={200: serializers.JobpostSerializer()},
+        tags=["Staff"]
     )
-    def get(self, request):
+    def put(self, request, id):
         try:
-            job_id = request.query_params.get("job_id")
-            if job_id:
-                applications = JobApplication.objects.filter(job_id=job_id)
-            else:
-                applications = JobApplication.objects.all()
-            
-            serializer = JobApplicationSerializer(applications, many=True)
+            job = Job.objects.get(id=id)
+            serializer = serializers.JobpostSerializer(job, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "message": "Job updated successfully.",
+                    "data": serializer.data
+                }, status=status.HTTP_200_OK)
             return Response({
-                "success": True,
-                "message": "Applications retrieved successfully.",
-                "data": serializer.data
-            }, status=status.HTTP_200_OK)
+                "success": False,
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Job.DoesNotExist:
+            return Response({"success": False, "message": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        except Exception as e:
-            return Response({
-                "success": False,
-                "error": str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+
+# class JobApplicationListAPIView(APIView):
+#     """
+#     Staff can view all job applications or filter by job ID.
+#     Shows each application's generated application number.
+#     """
+#     authentication_classes = [SSOUserTokenAuthentication]
+#     permission_classes = [IsAuthenticated]
+
+#     @swagger_auto_schema(
+#         operation_description="Retrieve job applications. Optionally filter by job ID.",
+#         manual_parameters=[
+#             openapi.Parameter(
+#                 'job_id',
+#                 openapi.IN_QUERY,
+#                 description="Filter applications by job ID",
+#                 type=openapi.TYPE_INTEGER
+#             )
+#         ],
+#         responses={200: JobApplicationSerializer(many=True)}
+#     )
+#     def get(self, request):
+#         try:
+#             job_id = request.query_params.get("job_id")
+#             if job_id:
+#                 applications = JobApplication.objects.filter(job_id=job_id)
+#             else:
+#                 applications = JobApplication.objects.all()
             
-class MbrDocumentsAPI(APIView):
-    """
-    Staff can view documents submitted by candidates.
-    """
-    authentication_classes = [SSOUserTokenAuthentication]
-    permission_classes = [IsAuthenticated]
+#             serializer = JobApplicationSerializer(applications, many=True)
+#             return Response({
+#                 "success": True,
+#                 "message": "Applications retrieved successfully.",
+#                 "data": serializer.data
+#             }, status=status.HTTP_200_OK)
 
-    @swagger_auto_schema(
-        operation_description="Retrieve all candidate documents or filter by `member_id`.",
-        manual_parameters=[
-            openapi.Parameter(
-                'member_id',
-                openapi.IN_QUERY,
-                description="Filter by member_id (card number)",
-                type=openapi.TYPE_INTEGER
-            )
-        ],
-        responses={200: MbrDocumentsSerializer(many=True)}
-    )
-    def get(self, request):
-        try:
-            member_id = request.query_params.get("member_id")
+#         except Exception as e:
+#             return Response({
+#                 "success": False,
+#                 "error": str(e)
+#             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            
+            
+            
+# class MbrDocumentsAPI(APIView):
+#     """
+#     Staff can view documents submitted by candidates.
+#     """
+#     authentication_classes = [SSOUserTokenAuthentication]
+#     permission_classes = [IsAuthenticated]
 
-            if member_id:
-                documents = MbrDocuments.objects.filter(card_number=member_id)
-            else:
-                documents = MbrDocuments.objects.all()
+#     @swagger_auto_schema(
+#         operation_description="Retrieve all candidate documents or filter by `member_card`.",
+#         manual_parameters=[
+#             openapi.Parameter(
+#                 'member_card',
+#                 openapi.IN_QUERY,
+#                 description="Filter by member_card (card number)",
+#                 type=openapi.TYPE_INTEGER
+#             )
+#         ],
+#         responses={200: MbrDocumentsSerializer(many=True)}
+#     )
+#     def get(self, request):
+#         try:
+#             member_id = request.query_params.get("member_card")
 
-            serializer = MbrDocumentsSerializer(documents, many=True)
+#             if member_id:
+#                 documents = MbrDocuments.objects.filter(card_number=member_id)
+#             else:
+#                 documents = MbrDocuments.objects.all()
 
-            return Response({
-                "success": True,
-                "message": "Documents retrieved successfully.",
-                "data": serializer.data
-            }, status=status.HTTP_200_OK)
+#             serializer = MbrDocumentsSerializer(documents, many=True)
 
-        except Exception as e:
-            return Response({
-                "success": False,
-                "message": "An error occurred while retrieving documents.",
-                "error": str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return Response({
+#                 "success": True,
+#                 "message": "Documents retrieved successfully.",
+#                 "data": serializer.data
+#             }, status=status.HTTP_200_OK)
+
+#         except Exception as e:
+#             return Response({
+#                 "success": False,
+#                 "message": "An error occurred while retrieving documents.",
+#                 "error": str(e)
+#             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
