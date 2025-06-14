@@ -5,4 +5,6 @@ urlpatterns = [
     path("jobs/", JobListCreateAPIView.as_view(), name="job-list-create"),
     path("jobs/<int:id>/", JobDetailAPIView.as_view(), name="job-detail"),
     path("applications/", JobApplicationListAPIView.as_view(), name="job-applications"),
+    
 ]
+

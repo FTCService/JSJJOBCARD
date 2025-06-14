@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.utils.timezone import now
 from jobcard_staff.models import JobApplication, Job
-from .serializers import CandidateSummarySerializer, JobPublicSerializer
+from .serializers import CandidateSummarySerializer, InstitutionJobSerializer, JobApplicationCountSerializer
 from jobcard_business.authentication import SSOBusinessTokenAuthentication
 
 
@@ -19,7 +19,7 @@ class EmployerJobApplicationsView(generics.ListAPIView):
 
     @swagger_auto_schema(
         operation_summary="List candidates for a job",
-        operation_description="Employers can view name and member ID of candidates who applied to their job posting.",
+        operation_description="Employers can view name and member card of candidates who applied to their job posting.",
         manual_parameters=[
             openapi.Parameter(
                 'job_id',
@@ -34,38 +34,43 @@ class EmployerJobApplicationsView(generics.ListAPIView):
     def get_queryset(self):
         job_id = self.kwargs.get('job_id')
         Job.objects.get(id=job_id, employer_id=self.request.user.employer_id)
-        return JobApplication.objects.filter(job_id=job_id).only("candidate_name", "member_id")
-
-class JobMitraJobListView(APIView):
-    """
-    Authenticated Job Mitra users see active job listings
-    """
+        return JobApplication.objects.filter(job_id=job_id).only("candidate_name", "member_card")
+    
+class InstitutionJobListView(APIView):
     authentication_classes = [SSOBusinessTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_summary="Job Mitra: View active job listings",
-        operation_description="Returns jobs to authenticated Job Mitra users only.",
-        responses={200: JobPublicSerializer(many=True)},
-        tags=["Job Mitra"]
+        operation_summary="Institution: View Jobs under this college",
+        responses={200: InstitutionJobSerializer(many=True)},
+        tags=["Institution"]
     )
     def get(self, request):
-        try:
-            # Optional: Add check for job mitra user type, if such role exists
-            # if not request.user.is_jobmitra:
-            #     return Response({"success": False, "message": "Unauthorized"}, status=403)
+        institution = getattr(request.user, 'institution', None)
 
-            jobs = Job.objects.filter(application_end_date__gte=now()).order_by('-created_at')
-            serializer = JobPublicSerializer(jobs, many=True)
-            return Response({
-                "success": True,
-                "message": "Job Mitra job listings retrieved successfully.",
-                "data": serializer.data
-            }, status=status.HTTP_200_OK)
-
-        except Exception as e:
+        if not institution:
             return Response({
                 "success": False,
-                "message": "Error retrieving jobs.",
-                "error": str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                "message": "User is not associated with any institution"
+            }, status=400)
+
+        jobs = Job.objects.filter(institution=institution).order_by('-created_at')
+        serializer = InstitutionJobSerializer(jobs, many=True)
+        return Response({
+            "success": True,
+            "message": "Jobs fetched successfully",
+            "data": serializer.data
+        }, status=200)
+        
+class InstitutionJobApplicationsCountView(APIView):
+    permission_classes = [IsAuthenticated]  # Adjust as needed
+
+    @swagger_auto_schema(
+        operation_description="List jobs posted by the logged-in college user with total applicants per job.",
+        responses={200: JobApplicationCountSerializer(many=True)}
+    )
+    def get(self, request):
+        # Filter jobs posted by this college user, using staff_email or another field
+        jobs = Job.objects.filter(staff_email=request.user.email)
+        serializer = JobApplicationCountSerializer(jobs, many=True)
+        return Response(serializer.data)

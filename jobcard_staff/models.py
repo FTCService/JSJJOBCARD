@@ -11,6 +11,7 @@ class Job(models.Model):
     title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
     employer_id = models.CharField(max_length=50)
+    jsj_business_id = models.CharField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=100)
     workplace = models.CharField(max_length=100)  # e.g., Remote, On-site
     staff_email = models.EmailField()
@@ -43,11 +44,14 @@ class JobApplication(models.Model):
     job = models.ForeignKey('Job', on_delete=models.CASCADE, related_name='applications')
     candidate_name = models.CharField(max_length=100)
     candidate_email = models.EmailField()
-    member_id = models.CharField(max_length=50)  # ✅ New field
+    member_card = models.CharField(max_length=50)  # ✅ New field
     location = models.CharField(max_length=100)  # ✅ New field
-    resume = models.FileField(upload_to='resumes/')
+    resume = models.TextField()
     cover_letter = models.TextField(blank=True, null=True)
     applied_at = models.DateTimeField(auto_now_add=True)
+    
+    # ✅ New field to store generated application number
+    application_number = models.CharField(max_length=50, unique=True, blank=True)
 
     def __str__(self):
         return f"{self.candidate_name} applied for {self.job.title}"

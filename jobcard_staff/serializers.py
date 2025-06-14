@@ -11,7 +11,18 @@ class JobSerializer(serializers.ModelSerializer):
 class JobApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobApplication
-        fields = '__all__'
+        fields = [
+            'id',
+            'job',
+            'candidate_name',
+            'candidate_email',
+            'member_card',
+            'location',
+            'resume',
+            'cover_letter',
+            'applied_at',
+            'application_number'  # ✅ Required to expose this field
+        ]
         read_only_fields = ['applied_at']
         
 class MbrDocumentsSerializer(serializers.ModelSerializer):

@@ -15,7 +15,7 @@ from . import serializers, models
 from jobcard_staff.models import JobApplication
 from .serializers import JobApplicationSerializer
 
-
+import datetime
 
 
 class MbrDocumentsAPI(APIView):
@@ -64,46 +64,43 @@ class MbrDocumentsAPI(APIView):
 
         return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
+    
+    
+    
 class JobApplicationCreateView(generics.CreateAPIView):
     authentication_classes = [SSOMemberTokenAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
     serializer_class = JobApplicationSerializer
-    queryset = JobApplication.objects.all()
+   
 
     @swagger_auto_schema(
         operation_summary="Student Apply for a Job",
-        operation_description="Allows an authenticated student to apply for a job with resume upload.",
-        manual_parameters=[],
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            required=["job", "candidate_name", "candidate_email", "location", "resume"],
-            properties={
-                'job': openapi.Schema(type=openapi.TYPE_INTEGER, description="Job ID"),
-                'candidate_name': openapi.Schema(type=openapi.TYPE_STRING),
-                'candidate_email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL),
-                'location': openapi.Schema(type=openapi.TYPE_STRING),
-                'cover_letter': openapi.Schema(type=openapi.TYPE_STRING),
-                'resume': openapi.Schema(type=openapi.TYPE_FILE),
-            }
-        )
+        operation_description="Student applies for a job. Returns only application number and member card number.",
+        request_body=JobApplicationSerializer
     )
     def post(self, request):
-        """
-        Submit a job application for the authenticated student.
-        Automatically assigns member_id from request.user.
-        """
-        member_id = request.user.mbrcardno  # Get member ID from the logged-in student
+        member_card = request.user.mbrcardno  # 👈 get from auth token
         data = request.data.copy()
-        data['member_id'] = member_id
+        
 
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            job_application = serializer.save()
+
+            # ✅ Generate application number
+            year = datetime.now().year
+            loc = job_application.location.upper().replace(" ", "")[:3]
+            mem = member_card.upper()[:4]
+            app_number = f"{year}-{loc}-{mem}-{job_application.id:04d}"
+
+            # ✅ Save application number
+            job_application.application_number = app_number
+            job_application.save()
+
             return Response({
-                "success": True,
-                "message": "Job application submitted successfully.",
-                "data": serializer.data
+                "application_number": app_number,
+                "member_card_number": member_card
             }, status=status.HTTP_201_CREATED)
 
         return Response({

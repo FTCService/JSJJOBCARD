@@ -80,10 +80,15 @@ class JobDetailAPIView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+        
+        
 
 class JobApplicationListAPIView(APIView):
     """
     Staff can view all job applications or filter by job ID.
+    Shows each application's generated application number.
     """
     authentication_classes = [SSOUserTokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -114,12 +119,15 @@ class JobApplicationListAPIView(APIView):
                 "message": "Applications retrieved successfully.",
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
-        
+
         except Exception as e:
             return Response({
                 "success": False,
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            
+            
             
 class MbrDocumentsAPI(APIView):
     """
@@ -129,12 +137,12 @@ class MbrDocumentsAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="Retrieve all candidate documents or filter by `member_id`.",
+        operation_description="Retrieve all candidate documents or filter by `member_card`.",
         manual_parameters=[
             openapi.Parameter(
-                'member_id',
+                'member_card',
                 openapi.IN_QUERY,
-                description="Filter by member_id (card number)",
+                description="Filter by member_card (card number)",
                 type=openapi.TYPE_INTEGER
             )
         ],
@@ -142,7 +150,7 @@ class MbrDocumentsAPI(APIView):
     )
     def get(self, request):
         try:
-            member_id = request.query_params.get("member_id")
+            member_id = request.query_params.get("member_card")
 
             if member_id:
                 documents = MbrDocuments.objects.filter(card_number=member_id)

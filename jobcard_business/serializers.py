@@ -5,16 +5,20 @@ from jobcard_staff.models import JobApplication, Job
 class CandidateSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = JobApplication
-        fields = ['member_id', 'candidate_name']
+        fields = ['member_card', 'candidate_name']
         
-class JobPublicSerializer(serializers.ModelSerializer):
+class InstitutionJobSerializer(serializers.ModelSerializer):  # Renamed class
     class Meta:
         model = Job
-        fields = [
-            'id', 'title', 'company_name', 'location', 'workplace',
-            'application_end_date', 'job_type', 'min_salary', 'max_salary',
-            'requirements', 'about_company', 'description',
-            'languages', 'area_of_work', 'industry', 'number_of_posts',
-            'education_levels', 'specialisations', 'key_skills',
-            'image', 'video', 'created_at'
-        ]
+        fields = '__all__'
+
+class JobApplicationCountSerializer(serializers.ModelSerializer):
+    job_id = serializers.IntegerField(source='id')
+    total_applicants = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Job
+        fields = ['job_id', 'title', 'company_name', 'location', 'total_applicants']
+
+    def get_total_applicants(self, obj):
+        return obj.applications.count()  # ✅ Uses related_name from your model
