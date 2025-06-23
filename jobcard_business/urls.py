@@ -4,7 +4,7 @@ from . import views, institute_api
 
 urlpatterns = [
     path('employer/job-list/', views.JobListBusinessAPIView.as_view(), name='employer-applications'),
-    
+    path('list/student/<int:job_id>/', views.JobApplicationListBusinessAPI.as_view(), name='business-job-applications'),
     
     
     path('institution-jobs/', institute_api.JobListInstituteAPI.as_view(), name='institution-job-list'),
