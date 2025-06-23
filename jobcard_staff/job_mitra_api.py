@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from jobcard_business.models import Job
+from jobcard_business.models import Job, JobApplication
 #from jobcard_member.models import Member
 from jobcard_staff.serializers import JobpostSerializer, JobMitraApplySerializer
 from jobcard_member.serializers import JobApplicationListSerializer
@@ -54,10 +54,62 @@ class JobMitraJobListView(APIView):
             
 class JobMitraApplicationListAPIView(APIView):
     """
-    Job Mitra API to view applications submitted on behalf of candidates.
+    Job Mitra API to comment on candidate profiles by job ID and view submitted applications.
     """
     authentication_classes = [SSOUserTokenAuthentication]
     permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Job Mitra - Comment on Candidate Profile",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['job_id', 'member_card', 'comment'],
+            properties={
+                'job_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Job ID'),
+                'member_card': openapi.Schema(type=openapi.TYPE_INTEGER, description='Member card number of the candidate'),
+                'comment': openapi.Schema(type=openapi.TYPE_STRING, description='Comment by Job Mitra'),
+            },
+        ),
+        responses={
+            200: "Comment added successfully",
+            400: "Bad Request",
+            404: "Application not found"
+        },
+        tags=["Job Mitra"]
+    )
+    def post(self, request):  # ✅ Line 80
+        job_id = request.data.get("job_id")  # ✅ Must be indented
+        member_card = request.data.get("member_card")
+        comment = request.data.get("comment")
+
+        if not job_id or not member_card or comment is None:
+            return Response({
+                "success": False,
+                "message": "'job_id', 'member_card', and 'comment' are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            application = JobApplication.objects.get(job_id=job_id, member_card=member_card)
+            application.jobmitra_comment = comment
+            application.save()
+
+            return Response({
+                "success": True,
+                "message": f"Comment added to application of member {member_card} for job {job_id}."
+            }, status=status.HTTP_200_OK)
+
+        except JobApplication.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Application not found for the given job and member card."
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
+            return Response({
+                "success": False,
+                "message": f"Internal Server Error: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(
         operation_summary="Job Mitra - View Candidate Applications",
@@ -85,14 +137,15 @@ class JobMitraApplicationListAPIView(APIView):
             "message": "Applications retrieved successfully.",
             "data": serializer.data
         }, status=status.HTTP_200_OK)
+
         
 class JobMitraApplyAPIView(APIView):
     """
-    Job Mitra applies to a job using only the member card number and adds resume.
+    Job Mitra applies to a job using only the member card number.
     """
 
     @swagger_auto_schema(
-        operation_description="Apply to a job on behalf of a member using their member card number and resume.",
+        operation_description="Apply to a job using only member card number.",
         request_body=JobMitraApplySerializer,
         tags=["Job Mitra"],
         responses={
@@ -105,8 +158,8 @@ class JobMitraApplyAPIView(APIView):
                 examples={"application/json": {"success": False, "message": "Already applied to this job."}}
             ),
             404: openapi.Response(
-                description="Member or Job not found",
-                examples={"application/json": {"success": False, "message": "Member not found."}}
+                description="Job not found",
+                examples={"application/json": {"success": False, "message": "Job not found."}}
             )
         }
     )
@@ -116,17 +169,6 @@ class JobMitraApplyAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         member_card = serializer.validated_data.get("member_card")
-        resume = serializer.validated_data.get("resume")
-        cover_letter = serializer.validated_data.get("cover_letter", "")
-
-        # ✅ Get Member
-        try:
-            member = Member.objects.get(mbrcardno=member_card)
-        except Member.DoesNotExist:
-            return Response({
-                "success": False,
-                "message": "Member not found."
-            }, status=status.HTTP_404_NOT_FOUND)
 
         # ✅ Get Job
         try:
@@ -149,8 +191,6 @@ class JobMitraApplyAPIView(APIView):
             JobApplication.objects.create(
                 job=job,
                 member_card=member_card,
-                resume=resume,
-                cover_letter=cover_letter,
                 applied_at=timezone.now(),
                 status="applied"
             )
@@ -166,3 +206,4 @@ class JobMitraApplyAPIView(APIView):
                 "success": False,
                 "message": f"Internal Server Error: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
