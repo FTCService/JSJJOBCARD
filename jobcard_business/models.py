@@ -13,6 +13,10 @@ class Job(models.Model):
     company_name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     workplace = models.CharField(max_length=100)  # e.g., Remote, On-site
+    
+    # ✅ New field to assign job posts to specific Job Mitra regions
+    job_mitra_location = models.CharField(max_length=100, null=True, blank=True)
+    
     application_end_date = models.DateField()
     job_type = models.CharField(max_length=20, choices=JOB_TYPE_CHOICES)
     min_salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -45,7 +49,7 @@ class JobApplication(models.Model):
     member_card =  models.BigIntegerField(verbose_name="Member Card Number")
     institute_id = models.IntegerField(verbose_name="Institute ID" , null=True, blank=True)
     cover_letter = models.TextField(blank=True)
-    resume = models.TextField(max_length=255)
+    resume = models.TextField(max_length=255, blank=True, null=True)  # ✅
     applied_at = models.DateTimeField(default=timezone.now)
     status = models.CharField(
         max_length=50,
@@ -58,6 +62,7 @@ class JobApplication(models.Model):
         ],
         default='applied'
     )
+    mitra_comment = models.TextField(blank=True, null=True)  # ✅ Added field
 
     def __str__(self):
         return f"{self.member_card} applied to {self.job.title}"

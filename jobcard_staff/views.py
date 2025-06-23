@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from jobcard_business.models import Job
-from . import serializers
+from jobcard_staff import serializers
 from .authentication import SSOUserTokenAuthentication
 
 
@@ -147,49 +147,4 @@ class JobDetailAPIView(APIView):
 #                 "error": str(e)
 #             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-            
-            
-            
-# class MbrDocumentsAPI(APIView):
-#     """
-#     Staff can view documents submitted by candidates.
-#     """
-#     authentication_classes = [SSOUserTokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-
-#     @swagger_auto_schema(
-#         operation_description="Retrieve all candidate documents or filter by `member_card`.",
-#         manual_parameters=[
-#             openapi.Parameter(
-#                 'member_card',
-#                 openapi.IN_QUERY,
-#                 description="Filter by member_card (card number)",
-#                 type=openapi.TYPE_INTEGER
-#             )
-#         ],
-#         responses={200: MbrDocumentsSerializer(many=True)}
-#     )
-#     def get(self, request):
-#         try:
-#             member_id = request.query_params.get("member_card")
-
-#             if member_id:
-#                 documents = MbrDocuments.objects.filter(card_number=member_id)
-#             else:
-#                 documents = MbrDocuments.objects.all()
-
-#             serializer = MbrDocumentsSerializer(documents, many=True)
-
-#             return Response({
-#                 "success": True,
-#                 "message": "Documents retrieved successfully.",
-#                 "data": serializer.data
-#             }, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             return Response({
-#                 "success": False,
-#                 "message": "An error occurred while retrieving documents.",
-#                 "error": str(e)
-#             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+# ✅ JOB MITRA: List Jobs by Location

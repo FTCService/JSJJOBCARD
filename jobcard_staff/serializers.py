@@ -10,4 +10,5 @@ class JobpostSerializer(serializers.ModelSerializer):
         
 
         
-
+class JobMitraApplySerializer(serializers.Serializer):
+    member_card = serializers.IntegerField(help_text="JSJ Member Card Number")

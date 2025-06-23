@@ -7,5 +7,7 @@ class InstitutionJobListSerializer(serializers.ModelSerializer):  # Renamed clas
     class Meta:
         model = models.Job
         fields = '__all__'
+        
+
 
 
