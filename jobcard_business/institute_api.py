@@ -10,7 +10,7 @@ from jobcard_business.authentication import SSOBusinessTokenAuthentication
 from jobcard_staff.serializers import JobpostSerializer
 from jobcard_business import models
 from jobcard_member.serializers import JobApplicationListSerializer
-
+from helpers.utils import get_member_details_by_card
 class JobListInstituteAPI(APIView):
     """
     API to list all jobs or create a new job post.
@@ -56,9 +56,8 @@ class JobApplicationListInstituteAPIView(APIView):
                     "success": False,
                     "message": "Authenticated user is not associated with a business."
                 }, status=status.HTTP_400_BAD_REQUEST)
-
            
-            applications = models.JobApplication.objects.filter(institute_id=business_id)
+            applications = models.JobApplication.objects.filter(job_id=job_id, institute_id=business_id)
             serializer = JobApplicationListSerializer(applications, many=True)
 
             return Response({
