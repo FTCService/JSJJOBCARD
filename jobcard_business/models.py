@@ -58,6 +58,11 @@ class JobApplication(models.Model):
         ],
         default='applied'
     )
+    referral = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="ID of the employee who submitted the application"
+    )
 
     def __str__(self):
         return f"{self.member_card} applied to {self.job.title}"
