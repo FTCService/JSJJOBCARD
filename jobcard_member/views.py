@@ -97,22 +97,37 @@ class JobApplyAPIView(APIView):
     authentication_classes = [SSOMemberTokenAuthentication]
     permission_classes = [IsAuthenticated]
     @swagger_auto_schema(
-        operation_description="Get all jobs applied by the member.",
-        responses={200: serializers.JobApplicationListSerializer(many=True)},
-        tags=["Member"]
+    operation_description="Get all jobs applied by the member.",
+    responses={200: serializers.JobApplicationListSerializer(many=True)},
+    tags=["Member"]
     )
     def get(self, request):
         try:
             member_card = request.user.mbrcardno  # from SSO
+            
+            # Check resume status
+            try:
+                doc = models.MbrDocuments.objects.get(card_number=member_card)
+                is_resume = bool(doc.Resume and doc.Resume.strip())
+            except models.MbrDocuments.DoesNotExist:
+                is_resume = False
+
+            # Fetch applications
             applications = JobApplication.objects.filter(member_card=member_card).select_related('job').order_by('-applied_at')
             serializer = serializers.JobApplicationListSerializer(applications, many=True)
+
             return Response({
                 "success": True,
                 "message": "Applied jobs retrieved successfully.",
+                "is_resume": is_resume,
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
+
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({
+                "success": False,
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     @swagger_auto_schema(
         operation_description="Apply for a job by providing job ID, resume, and optional cover letter.",
@@ -165,43 +180,4 @@ class JobApplyAPIView(APIView):
         
         
     
-# class JobApplicationCreateView(generics.CreateAPIView):
-#     authentication_classes = [SSOMemberTokenAuthentication]
-#     permission_classes = [IsAuthenticated]
 
-#     serializer_class = JobApplicationSerializer
-   
-
-#     @swagger_auto_schema(
-#         operation_summary="Student Apply for a Job",
-#         operation_description="Student applies for a job. Returns only application number and member card number.",
-#         request_body=JobApplicationSerializer
-#     )
-#     def post(self, request):
-#         member_card = request.user.mbrcardno  # 👈 get from auth token
-#         data = request.data.copy()
-        
-
-#         serializer = self.get_serializer(data=data)
-#         if serializer.is_valid():
-#             job_application = serializer.save()
-
-#             # ✅ Generate application number
-#             year = datetime.now().year
-#             loc = job_application.location.upper().replace(" ", "")[:3]
-#             mem = member_card.upper()[:4]
-#             app_number = f"{year}-{loc}-{mem}-{job_application.id:04d}"
-
-#             # ✅ Save application number
-#             job_application.application_number = app_number
-#             job_application.save()
-
-#             return Response({
-#                 "application_number": app_number,
-#                 "member_card_number": member_card
-#             }, status=status.HTTP_201_CREATED)
-
-#         return Response({
-#             "success": False,
-#             "errors": serializer.errors
-#         }, status=status.HTTP_400_BAD_REQUEST)

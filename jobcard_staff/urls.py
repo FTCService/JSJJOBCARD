@@ -9,6 +9,9 @@ urlpatterns = [
     
     
     path('job_mitra/applied/list/<int:job_id>/', job_mitra_api.ApplicationListOfStudent.as_view(), name='job_mitra-applied-list'),
+    path('jobmitra/member-details/', job_mitra_api.GetMemberDetailsByCardApi.as_view(), name='get-member-details'),
+    path('jobmitra/apply-for-member/', job_mitra_api.ApplyJobForMemberAPIView.as_view(), name='apply-job-for-member'),
+    
 ]
 
 
