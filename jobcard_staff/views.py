@@ -9,6 +9,7 @@ from . import serializers
 from .authentication import SSOUserTokenAuthentication
 from jobcard_member.models import MbrDocuments
 from jobcard_member.serializers import MbrDocumentsSerializer
+
 class JobListCreateAPIView(APIView):
     """
     API to list all jobs or create a new job post.
