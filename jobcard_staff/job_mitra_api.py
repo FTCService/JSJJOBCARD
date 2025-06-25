@@ -123,23 +123,23 @@ class GetMemberDetailsByCardApi(APIView):
                 pass
 
             # Step 3: Extract meta_data (handling both dict and string cases)
-            meta_data_raw = member_data.get("meta_data", {})
+            address_raw = member_data.get("address", {})
             # print("📦 meta_data raw:", meta_data_raw)
             # print("📦 meta_data type:", type(meta_data_raw))
 
-            if isinstance(meta_data_raw, str):
+            if isinstance(address_raw, str):
                 try:
-                    meta_data = json.loads(meta_data_raw)
+                    address = json.loads(address_raw)
                 except json.JSONDecodeError:
-                    meta_data = {}
+                    address = {}
             else:
-                meta_data = meta_data_raw or {}
+                address = address_raw or {}
 
             # print("✅ Parsed meta_data:", meta_data)
 
             # Step 4 & 5: Update member_data with address fields ONLY if present and non-empty in meta_data
             for field in ["state", "district", "block", "village", "pincode"]:
-                value = meta_data.get(field)
+                value = address.get(field)
                 if value:  # update only if meta_data has non-empty value
                     member_data[field] = value
 

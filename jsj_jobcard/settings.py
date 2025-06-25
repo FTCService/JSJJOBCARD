@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'jobcard_member',
+    'goverment',
     'jobcard_business',
     'jobcard_staff',
     'jobcard_admin',
