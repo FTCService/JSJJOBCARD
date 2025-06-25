@@ -134,70 +134,60 @@ class JobApplicationListOfStudent(APIView):
                 "success": False,
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    @swagger_auto_schema(
+        operation_description="Update status of a job application (by application ID).",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=["id", "status"],
+            properties={
+                "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID of the application"),
+                "status": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="New status (applied, under_review, shortlisted, rejected, selected)",
+                    enum=["applied", "under_review", "shortlisted", "rejected", "selected"]
+                )
+            }
+        ),
+        responses={
+            200: openapi.Response(description="Application status updated"),
+            404: openapi.Response(description="Application not found"),
+            400: openapi.Response(description="Invalid input")
+        },
+        tags=["Staff"]
+    )
+    def patch(self, request, job_id):
+        application_id = request.data.get("id")
+        new_status = request.data.get("status")
 
-    # @swagger_auto_schema(
-    #     operation_description="Update the status of a specific job application by ID.",
-    #     request_body=openapi.Schema(
-    #         type=openapi.TYPE_OBJECT,
-    #         required=['status'],
-    #         properties={
-    #             'status': openapi.Schema(
-    #                 type=openapi.TYPE_STRING,
-    #                 enum=['applied', 'under_review', 'shortlisted', 'rejected', 'selected'],
-    #                 description="New status of the job application"
-    #             )
-    #         }
-    #     ),
-    #     manual_parameters=[
-    #         openapi.Parameter(
-    #             'application_id',
-    #             openapi.IN_PATH,
-    #             description="ID of the JobApplication to update",
-    #             type=openapi.TYPE_INTEGER,
-    #             required=True
-    #         )
-    #     ],
-    #     responses={200: openapi.Response("Status updated")},
-    #     tags=["Staff"]
-    # )
-    # def put(self, request, job_id):
-    #     try:
-    #         application_id = request.data.get('application_id')
-    #         new_status = request.data.get('status')
+        if not application_id or not new_status:
+            return Response({
+                "success": False,
+                "message": "application_id and status are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-    #         if not application_id or not new_status:
-    #             return Response({
-    #                 "success": False,
-    #                 "message": "Both 'application_id' and 'status' are required."
-    #             }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            application = JobApplication.objects.get(id=application_id, job_id=job_id)
+            application.status = new_status
+            application.save()
 
-    #         job_application = JobApplication.objects.filter(id=application_id, job_id=job_id).first()
+            return Response({
+                "success": True,
+                "message": "Application status updated successfully.",
+                "application_id": application.id,
+                "new_status": application.status
+            }, status=status.HTTP_200_OK)
 
-    #         if not job_application:
-    #             return Response({
-    #                 "success": False,
-    #                 "message": "Job application not found."
-    #             }, status=status.HTTP_404_NOT_FOUND)
-
-    #         job_application.status = new_status
-    #         job_application.save()
-
-    #         return Response({
-    #             "success": True,
-    #             "message": "Status updated successfully.",
-    #             "application_id": job_application.id,
-    #             "new_status": job_application.status
-    #         }, status=status.HTTP_200_OK)
-
-    #     except Exception as e:
-    #         return Response({
-    #             "success": False,
-    #             "message": "Failed to update status.",
-    #             "error": str(e)
-    #         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-            
-            
+        except JobApplication.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Application not found for the given job."
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
             
 class MbrDocumentsAPI(APIView):
     """
