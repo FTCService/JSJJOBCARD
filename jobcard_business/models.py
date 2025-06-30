@@ -2,38 +2,110 @@ from django.db import models
 from django.utils import timezone
 
 class Job(models.Model):
-    JOB_TYPE_CHOICES = [
-        ('Full Time', 'Full Time'),
-        ('Part Time', 'Part Time'),
-        ('Internship', 'Internship'),
-        
+    WORKPLACE_CHOICES = [
+        ('On-site', 'On-site'),
+        ('Remote', 'Remote'),
+        ('Hybrid', 'Hybrid'),
     ]
+
+  
+
+    RECRUITMENT_TIMELINE_CHOICES = [
+        ("Immediate", "Immediate"),
+        ("1 Week", "1 Week"),
+        ("2 Weeks", "2 Weeks"),
+        ("1 Month", "1 Month"),
+        ("Flexible", "Flexible")
+    ]
+
+    EDUCATION_LEVEL_CHOICES = [
+        ("10th Pass", "10th Pass"),
+        ("12th Pass", "12th Pass"),
+        ("Diploma", "Diploma"),
+        ("Graduate", "Graduate"),
+        ("Post Graduate", "Post Graduate"),
+        ("Doctorate", "Doctorate"),
+        ("MBA", "MBA"),
+        ("Other", "Other"),
+    ]
+
+    JOB_TYPE_CHOICES = [
+        ('Full-time', 'Full-time'),
+        ('Part-time', 'Part-time'),
+        ('Internship', 'Internship'),
+        ('Contract', 'Contract'),
+        ('Temporary', 'Temporary'),
+        ('Permanent', 'Permanent'),
+    ]
+
+    SCHEDULE_CHOICES = [
+        ("Day shift", "Day shift"),
+        ("Night shift", "Night shift"),
+        ("Weekend availability", "Weekend availability"),
+        ("Rotational shift", "Rotational shift"),
+        ("Flexible shift", "Flexible shift"),
+    ]
+
+    EXPERIENCE_CHOICES = [
+        ("Fresher", "Fresher"),
+        ("0-1 Years", "0-1 Years"),
+        ("1-3 Years", "1-3 Years"),
+        ("3-5 Years", "3-5 Years"),
+        ("5+ Years", "5+ Years"),
+    ]
+
+    INDUSTRY_CHOICES = [
+        ("IT", "IT"),
+        ("Education", "Education"),
+        ("Healthcare", "Healthcare"),
+        ("Finance", "Finance"),
+        ("Retail", "Retail"),
+        ("Construction", "Construction"),
+        ("Manufacturing", "Manufacturing"),
+        ("Hospitality", "Hospitality"),
+    ]
+
     business_id = models.IntegerField(null=True, blank=True)
+
+    # Step 0
     title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    workplace = models.CharField(max_length=100)  # e.g., Remote, On-site
-    application_end_date = models.DateField()
-    job_type = models.CharField(max_length=20, choices=JOB_TYPE_CHOICES)
+    area = models.CharField(max_length=100, blank=True, null=True)
+    pincode = models.CharField(max_length=10, blank=True, null=True)
+    workplace = models.CharField(max_length=20, choices=WORKPLACE_CHOICES)
+
+    # Step 1
+    job_type = models.JSONField(default=list, blank=True)
+    schedule = models.JSONField(default=list, blank=True)
+    number_of_posts = models.PositiveIntegerField()
+    recruitment_timeline = models.CharField(max_length=20, choices=RECRUITMENT_TIMELINE_CHOICES)
+
+    # Step 2
     min_salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     max_salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    requirements = models.TextField()
-    about_company = models.TextField()
-    description = models.TextField()
-    languages = models.JSONField(default=list, blank=True)
-    area_of_work = models.JSONField(default=list, blank=True)
-    industry = models.CharField(max_length=100)
-    number_of_posts = models.PositiveIntegerField()
-    education_levels = models.JSONField(default=list, blank=True)
-    specialisations = models.JSONField(default=list, blank=True)
+    pay_rate = models.CharField(max_length=20)
     key_skills = models.JSONField(default=list, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    experience_required = models.CharField(max_length=50, blank=True) 
-    is_active = models.BooleanField(default=True)
+    specialisations = models.JSONField(default=list, blank=True)
 
-    # New fields for media
-    image = models.TextField( null=True, blank=True)
-    video = models.TextField(null=True, blank=True)
+    # Step 3
+    description = models.TextField(null=True, blank=True)
+    company_info = models.TextField(null=True, blank=True)
+    requirements = models.TextField(null=True, blank=True)
+
+    # Step 4
+    education_levels = models.JSONField(default=list, blank=True)
+    languages = models.JSONField(default=list, blank=True)
+
+    # Step 5
+    application_end_date = models.DateField(null=True, blank=True)
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES, default="IT")
+    experience_required = models.CharField(max_length=50, choices=EXPERIENCE_CHOICES)
+    image = models.TextField(blank=True, null=True)
+    video = models.TextField(blank=True, null=True)
+
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f"{self.title} at {self.company_name}"

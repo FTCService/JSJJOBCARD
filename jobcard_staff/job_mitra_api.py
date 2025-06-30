@@ -164,9 +164,6 @@ class GetMemberDetailsByCardApi(APIView):
 
 
 
-
-
-
 class ApplyJobForMemberAPIView(APIView):
     """
     job mitra applies for a job on behalf of a member using their card number.
