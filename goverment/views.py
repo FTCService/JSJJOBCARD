@@ -9,6 +9,9 @@ from . import serializers
 from .authentication import SSOGovernmentTokenAuthentication
 from jobcard_member.models import MbrDocuments
 from jobcard_staff.serializers import JobpostSerializer,JobApplicationStaffViewSerializer
+            
+import requests
+from django.conf import settings
 
 
 class JobListGovermentAPIView(APIView):
@@ -68,15 +71,14 @@ class JobApplicationListOfStudentGoverment(APIView):
             
             
             
-            
-import requests
-from django.conf import settings
 
 
 class DashboardSummaryAPIView(APIView):
     """
     Dashboard API: View all registered institutes, companies, jobs, and placed students.
     """
+    authentication_classes = [SSOGovernmentTokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         operation_description="Dashboard summary showing total registered institutes, companies, jobs, and placed students.",
