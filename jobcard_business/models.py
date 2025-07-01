@@ -103,7 +103,8 @@ class Job(models.Model):
     experience_required = models.CharField(max_length=50, choices=EXPERIENCE_CHOICES)
     image = models.TextField(blank=True, null=True)
     video = models.TextField(blank=True, null=True)
-
+    
+    youtube_url = models.URLField(max_length=255, blank=True, null=True, help_text="YouTube video link")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
