@@ -9,7 +9,7 @@ from . import serializers
 from .authentication import SSOGovernmentTokenAuthentication
 from jobcard_member.models import MbrDocuments
 from jobcard_staff.serializers import JobpostSerializer,JobApplicationStaffViewSerializer
-            
+from helpers.utils import get_member_details_by_card  
 import requests
 from django.conf import settings
 
@@ -23,7 +23,7 @@ class JobListGovermentAPIView(APIView):
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all job postings.",
-        responses={200: JobpostSerializer(many=True)},tags=["Goverment"]
+        responses={200: JobpostSerializer(many=True)},tags=["Govenrment"]
     )
     def get(self, request):
         try:
@@ -51,7 +51,7 @@ class JobApplicationListOfStudentGoverment(APIView):
     @swagger_auto_schema(
         operation_description="Get all student applications for a specific job ID.",
         responses={200: JobApplicationStaffViewSerializer(many=True)},
-        tags=["Goverment"]
+        tags=["Govenrment"]
     )
     def get(self, request, job_id):
         try:
@@ -97,7 +97,7 @@ class DashboardSummaryAPIView(APIView):
             ),
             500: openapi.Response(description="Server error")
         },
-        tags=["Government"]
+        tags=["Govenrment"]
     )
     def get(self, request):
         try:
@@ -135,7 +135,60 @@ class DashboardSummaryAPIView(APIView):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class PlacedStudentListAPIView(APIView):
+    """
+    API to return a list of placed students (status = 'selected').
+    """
+    authentication_classes = [SSOGovernmentTokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Returns list of students placed through jobs (status = 'selected').",
+        responses={
+            200: openapi.Response(
+                description="List of placed students",
+                examples={
+                    "application/json": {
+                        "success": True,
+                        "placed_students": [
+                            {"member_card": 2536243526358565, "full_name": "Ravi Kumar"},
+                            {"member_card": 2536243526357862, "full_name": "Suman Sharma"}
+                        ]
+                    }
+                }
+            )
+        },
+        tags=["Govenrment"]
+    )
+    def get(self, request):
+        try:
+            selected_apps = JobApplication.objects.filter(status='selected')
+            placed_students = []
+
+            for app in selected_apps:
+                member_card = app.member_card
+                member_data = get_member_details_by_card(member_card)
+                full_name = member_data.get('full_name') if member_data else None
+
+                if full_name:
+                    placed_students.append({
+                        "member_card": member_card,
+                        "full_name": full_name
+                    })
+
+            return Response({
+                "success": True,
+                "placed_students": placed_students
+            }, status=200)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": "Server error",
+                "error": str(e)
+            }, status=500)
+            
+            
 class JobCountByBusinessAPIView(APIView):
     """
     Returns number of jobs posted by a business.
