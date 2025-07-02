@@ -112,7 +112,7 @@ class DashboardSummaryAPIView(APIView):
             auth_data = auth_response.json()
             total_institute = auth_data.get("institutes", 0)
             total_company = auth_data.get("companies", 0)
-
+            total_students = auth_data.get("total_students", 0)
             # 2️⃣ Jobs
             jobs = Job.objects.count()
 
@@ -124,6 +124,7 @@ class DashboardSummaryAPIView(APIView):
                 "total_institute": total_institute,
                 "total_company": total_company,
                 "job_titles": jobs,
+                "total_students":total_students,
                 "placed_students": selected_apps
             }, status=status.HTTP_200_OK)
 
