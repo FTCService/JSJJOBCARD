@@ -200,5 +200,8 @@ class JobCountByBusinessAPIView(APIView):
         if not business_id:
             return Response({"job_count": 0}, status=400)
 
+        # If Job model uses ForeignKey to Business
         count = Job.objects.filter(business_id=business_id).count()
+
         return Response({"job_count": count}, status=200)
+
