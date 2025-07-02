@@ -88,6 +88,57 @@ class JoblistAPIView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
+class JobDetailAPIView(APIView):
+    """
+    API to retrieve detailed information about a specific job,
+    and check if the member has uploaded a resume.
+    """
+    authentication_classes = [SSOMemberTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Retrieve job details by job ID and check resume status.",
+        responses={200: JobpostSerializer()},
+        tags=["Member"]
+    )
+    def get(self, request, job_id):
+        try:
+            member_card = request.user.mbrcardno
+
+            # Get Job
+            job = Job.objects.get(id=job_id)
+            serializer = JobpostSerializer(job)
+
+            # Check Resume
+            is_resume = False
+            try:
+                doc = models.MbrDocuments.objects.get(card_number=member_card)
+                is_resume = bool(doc.Resume and doc.Resume.strip())
+            except models.MbrDocuments.DoesNotExist:
+                pass  # is_resume remains False
+
+            return Response({
+                "success": True,
+                "message": "Job detail retrieved successfully.",
+                "is_resume": is_resume,
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except Job.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Job not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": "Server error",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    
         
     
 class JobApplyAPIView(APIView):
