@@ -64,13 +64,13 @@ class JobApplicationListInstituteAPIView(APIView):
             applications = models.JobApplication.objects.filter(job_id=job_id, institute_id=business_id)
             application_serializer = JobApplicationListSerializer(applications, many=True)
 
-            # Fetch job details
+            # ✅ Fetch job details (ignore business filter)
             try:
-                job = models.Job.objects.get(id=job_id, business_id=business_id)
+                job = models.Job.objects.get(id=job_id)
                 job_serializer = JobpostSerializer(job)
                 job_data = job_serializer.data
             except models.Job.DoesNotExist:
-                job_data = None  # Or return 404 if job must exist
+                job_data = None
 
             return Response({
                 "success": True,
