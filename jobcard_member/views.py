@@ -14,8 +14,9 @@ from .authentication import SSOMemberTokenAuthentication
 from . import serializers, models
 from jobcard_business.models import JobApplication, Job
 from jobcard_staff.serializers import JobpostSerializer
-
-
+import os
+from urllib.parse import urlparse
+import re
 
 
 class MbrDocumentsAPI(APIView):
@@ -27,20 +28,30 @@ class MbrDocumentsAPI(APIView):
 
     @swagger_auto_schema(
         operation_description="Retrieve all documents of the authenticated member",
-        responses={200: serializers.MbrDocumentsSerializer()},tags=["Member"]
+        responses={200: serializers.MbrDocumentsSerializer()},
+        tags=["Member"]
     )
     def get(self, request):
         """
         Get all documents for the authenticated member.
         """
-        
         documents = models.MbrDocuments.objects.filter(card_number=request.user.mbrcardno).first()
 
         if not documents:
-            return Response({"success": True, "data": {}}, status=status.HTTP_200_OK)  # Return empty dict instead of 404
-        
+            return Response({"success": True, "data": {}}, status=status.HTTP_200_OK)
+
         serializer = serializers.MbrDocumentsSerializer(documents)
-        return Response({"success": True, "data": serializer.data}, status=status.HTTP_200_OK)
+        data = dict(serializer.data)
+
+        # Extract short resume file name if resume URL exists
+        resume_url = documents.Resume
+        if resume_url and resume_url.strip():
+            path = urlparse(resume_url).path
+            full_filename = os.path.basename(path)
+            short_resume_name = full_filename[-15:] if len(full_filename) >= 15 else full_filename
+            data["Resume_name"] = short_resume_name  # Add custom field
+
+        return Response({"success": True, "data": data}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
         operation_description="Upload or update document URLs for the authenticated member",
@@ -112,16 +123,26 @@ class JobDetailAPIView(APIView):
 
             # Check Resume
             is_resume = False
+            resume_name = None
             try:
                 doc = models.MbrDocuments.objects.get(card_number=member_card)
-                is_resume = bool(doc.Resume and doc.Resume.strip())
+                resume_url = doc.Resume
+                if resume_url and resume_url.strip():
+                    is_resume = True
+                    path = urlparse(resume_url).path
+                    full_filename = os.path.basename(path)
+
+                    # ✅ Get the last 15 characters of the filename
+                    resume_name = full_filename[-15:] if len(full_filename) >= 15 else full_filename
+
             except models.MbrDocuments.DoesNotExist:
-                pass  # is_resume remains False
+                pass
 
             return Response({
                 "success": True,
                 "message": "Job detail retrieved successfully.",
                 "is_resume": is_resume,
+                "resume": resume_name,
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
 
@@ -137,7 +158,6 @@ class JobDetailAPIView(APIView):
                 "message": "Server error",
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     
         
     
