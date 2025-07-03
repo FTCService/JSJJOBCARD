@@ -25,10 +25,12 @@ class JobListInstituteAPI(APIView):
     def get(self, request):
         try:
             jobs = models.Job.objects.all()
+            total_jobs = jobs.count()
             serializer = JobpostSerializer(jobs, many=True)
             return Response({
                 "success": True,
                 "message": "Job list retrieved successfully.",
+                "total_jobs":total_jobs,
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
         except Exception as e:
