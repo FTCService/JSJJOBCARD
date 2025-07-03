@@ -40,13 +40,14 @@ class JobListInstituteAPI(APIView):
     
 class JobApplicationListInstituteAPIView(APIView):
     """
-    API to list all applications for jobs posted by the authenticated business.
+    API to list all applications for jobs posted by the authenticated business,
+    along with job details.
     """
     authentication_classes = [SSOBusinessTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="List all job applications received for this business.",
+        operation_description="List all job applications received for this business, including job details.",
         responses={200: JobApplicationListSerializer(many=True)},
         tags=["Institute"]
     )
@@ -58,15 +59,29 @@ class JobApplicationListInstituteAPIView(APIView):
                     "success": False,
                     "message": "Authenticated user is not associated with a business."
                 }, status=status.HTTP_400_BAD_REQUEST)
-           
+
+            # Fetch applications
             applications = models.JobApplication.objects.filter(job_id=job_id, institute_id=business_id)
-            serializer = JobApplicationListSerializer(applications, many=True)
+            application_serializer = JobApplicationListSerializer(applications, many=True)
+
+            # Fetch job details
+            try:
+                job = models.Job.objects.get(id=job_id, business_id=business_id)
+                job_serializer = JobpostSerializer(job)
+                job_data = job_serializer.data
+            except models.Job.DoesNotExist:
+                job_data = None  # Or return 404 if job must exist
 
             return Response({
                 "success": True,
                 "message": "Job applications retrieved successfully.",
-                "data": serializer.data
+                "job_details": job_data,
+                "data": application_serializer.data
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({
+                "success": False,
+                "message": "Server error.",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
