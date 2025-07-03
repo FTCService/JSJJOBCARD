@@ -73,3 +73,60 @@ class JobApplicationListBusinessAPI(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
+    
+class EmployerDashboardAPIView(APIView):
+    """
+    API for employer dashboard summary:
+    - Total jobs posted
+    - Total applications received
+    - Total students placed
+    """
+    authentication_classes = [SSOBusinessTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Get employer dashboard stats: total jobs, applications, and placed students.",
+        responses={200: 'Dashboard Stats'},
+        tags=["Business"]
+    )
+    def get(self, request):
+        try:
+            business_id = request.user.business_id
+            if not business_id:
+                return Response({
+                    "success": False,
+                    "message": "Authenticated user is not associated with a business."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Get all jobs for this business
+            job_ids = models.Job.objects.filter(business_id=business_id).values_list('id', flat=True)
+
+            # Total jobs
+            total_jobs = job_ids.count()
+
+            # Total applications across all jobs
+            total_applications = models.JobApplication.objects.filter(job_id__in=job_ids).count()
+
+            # Total placed students (assuming status = 'placed' or 'selected')
+            total_placed = models.JobApplication.objects.filter(
+                job_id__in=job_ids,
+                status__in=["placed", "selected"]
+            ).count()
+
+            return Response({
+                "success": True,
+                "message": "Dashboard data retrieved successfully.",
+                "data": {
+                    "total_jobs": total_jobs,
+                    "total_applications": total_applications,
+                    "total_placed_students": total_placed
+                }
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": "Server error",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
