@@ -11,11 +11,10 @@ class MbrDocumentsSerializer(serializers.ModelSerializer):
 
 class JobApplicationCreateSerializer(serializers.Serializer):
     job = serializers.PrimaryKeyRelatedField(queryset=Job.objects.all())
-    resume = serializers.CharField(max_length=255)
-    institute_id= serializers.CharField(max_length=6)
+    resume = serializers.CharField(max_length=255, allow_blank=True, required=False)
+    institute_id = serializers.CharField(max_length=6, allow_blank=True, required=False)
     cover_letter = serializers.CharField(allow_blank=True, required=False)
-       
-       
+
 class JobApplicationListSerializer(serializers.ModelSerializer):
     job_title = serializers.CharField(source='job.title', read_only=True)
     company_name = serializers.CharField(source='job.company_name', read_only=True)
