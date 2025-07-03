@@ -213,8 +213,8 @@ class JobApplyAPIView(APIView):
                 job_id = serializer.validated_data.get('job')
                 job = Job.objects.get(id=job_id.id)
 
-                member_card = request.user.mbrcardno  # assuming this comes from your SSO system
-               
+                member_card = request.user.mbrcardno  # from SSO
+
                 # Check if already applied
                 if JobApplication.objects.filter(job=job, member_card=member_card).exists():
                     return Response({
@@ -222,13 +222,27 @@ class JobApplyAPIView(APIView):
                         "message": "You have already applied to this job."
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                # Save application
+                cover_letter = serializer.validated_data.get('cover_letter', '')
+                institute_id = serializer.validated_data.get('institute_id', '')
+                new_resume = serializer.validated_data.get('resume', '')
+
+                # ✅ Check if Resume already exists in MbrDocuments
+                doc_obj, created = models.MbrDocuments.objects.get_or_create(card_number=member_card)
+
+                if doc_obj.Resume:  # If resume already exists
+                    resume_to_use = doc_obj.Resume
+                else:
+                    resume_to_use = new_resume
+                    doc_obj.Resume = resume_to_use  # Update resume
+                    doc_obj.save()
+
+                # ✅ Save Job Application with resume from documents table
                 JobApplication.objects.create(
                     job=job,
                     member_card=member_card,
-                    institute_id=serializer.validated_data.get('institute_id', ''),
-                    cover_letter=serializer.validated_data.get('cover_letter', ''),
-                    resume=serializer.validated_data.get('resume')
+                    institute_id=institute_id,
+                    cover_letter=cover_letter,
+                    resume=resume_to_use
                 )
 
                 return Response({
@@ -246,9 +260,13 @@ class JobApplyAPIView(APIView):
                 "success": False,
                 "message": "Invalid job ID."
             }, status=status.HTTP_404_NOT_FOUND)
+
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({
+                "success": False,
+                "message": "Server error",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         
-        
-    
 
