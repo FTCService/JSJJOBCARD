@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Job Application Confirmation</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f7f9; padding: 30px;">
+    <div style="max-width: 600px; margin: auto; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 20px;">
+        <h2 style="color: #28a745;">Your Job Application is Confirmed!</h2>
+        <p>Hello {{ full_name }},</p>
+        <p>You've successfully applied for the position <strong>{{ job_title }}</strong>.</p>
+
+        <h4>Application Details:</h4>
+        <ul>
+            <li><strong>Member Card:</strong> {{ mbrcardno }}</li>
+            <li><strong>Institute ID:</strong> {{ institute_id }}</li>
+            <li><strong>Resume:</strong> {{ resume }}</li>
+            <li><strong>Cover Letter:</strong> {{ cover_letter }}</li>
+        </ul>
+
+        <p>We will get back to you if your profile is shortlisted.</p>
+
+        <p style="margin-top: 30px;">Thanks,<br>JSJCard Team</p>
+    </div>
+</body>
+</html>
