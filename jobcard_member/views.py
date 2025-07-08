@@ -17,6 +17,7 @@ from jobcard_staff.serializers import JobpostSerializer
 import os
 from urllib.parse import urlparse
 import re
+from helpers.email import send_template_email
 
 
 class MbrDocumentsAPI(APIView):
@@ -214,7 +215,9 @@ class JobApplyAPIView(APIView):
                 job = Job.objects.get(id=job_id.id)
 
                 member_card = request.user.mbrcardno  # from SSO
-
+                member_data = get_member_details_by_card(member_card)
+                full_name = member_data.get('full_name')
+                email = member_data.get('email')
                 # Check if already applied
                 if JobApplication.objects.filter(job=job, member_card=member_card).exists():
                     return Response({
@@ -223,7 +226,7 @@ class JobApplyAPIView(APIView):
                     }, status=status.HTTP_400_BAD_REQUEST)
 
                 cover_letter = serializer.validated_data.get('cover_letter', '')
-                institute_id = serializer.validated_data.get('institute_id', '')
+                institute_id = serializer.validated_data.get('institute_id') or None
                 new_resume = serializer.validated_data.get('resume', '')
 
                 # ✅ Check if Resume already exists in MbrDocuments
@@ -244,7 +247,19 @@ class JobApplyAPIView(APIView):
                     cover_letter=cover_letter,
                     resume=resume_to_use
                 )
-
+                context = {
+                   "full_name": full_name,
+                    "mbrcardno": member_card,
+                    "institute_id": institute_id or "N/A",
+                    "resume": resume_to_use,
+                    "cover_letter": cover_letter or "N/A"
+                }
+                send_template_email(
+                    subject="Job Application Confirmation - JSJCard",
+                    template_name="email_template/job_applied.html",
+                    context=context,
+                    recipient_list=[email] 
+)
                 return Response({
                     "success": True,
                     "message": "Application submitted successfully."
@@ -261,12 +276,6 @@ class JobApplyAPIView(APIView):
                 "message": "Invalid job ID."
             }, status=status.HTTP_404_NOT_FOUND)
 
-        except Exception as e:
-            return Response({
-                "success": False,
-                "message": "Server error",
-                "error": str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        
         
 
