@@ -40,6 +40,30 @@ class JobListBusinessAPIView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class JobDetailBusinessAPIView(APIView):
+    """
+    API to retrieve, update, or delete a job post by ID.
+    """
+    authentication_classes = [SSOBusinessTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Retrieve a job by its ID.",
+        responses={200: JobpostSerializer()},tags=["Business"]
+    )
+    def get(self, request, job_id):
+        try:
+            job = models.Job.objects.get(id=job_id)
+            serializer = JobpostSerializer(job)
+            return Response({
+                "success": True,
+                "message": "Job retrieved successfully.",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class JobApplicationListBusinessAPI(APIView):
     """
     API to list all applications for jobs posted by the authenticated business.

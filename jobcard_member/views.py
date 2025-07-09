@@ -259,7 +259,7 @@ class JobApplyAPIView(APIView):
                     template_name="email_template/job_applied.html",
                     context=context,
                     recipient_list=[email] 
-)
+                    )
                 return Response({
                     "success": True,
                     "message": "Application submitted successfully."
