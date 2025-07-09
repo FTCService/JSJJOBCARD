@@ -10,8 +10,6 @@ from .authentication import SSOUserTokenAuthentication
 from jobcard_member.models import MbrDocuments
 from helpers.utils import get_member_details_by_card
 import json
-import os
-from urllib.parse import urlparse
 class ApplicationListOfStudent(APIView):
     """
     Staff can view job applications or update their status.
@@ -116,20 +114,11 @@ class GetMemberDetailsByCardApi(APIView):
             # Step 2: Fetch resume from MbrDocuments
             is_resume = False
             resume_value = None
-            resume_name = None 
             try:
                 doc = MbrDocuments.objects.get(card_number=card_number)
-                resume_url = doc.Resume
                 if doc.Resume and doc.Resume.strip():
                     is_resume = True
-                    # resume_value = doc.Resume
-                    resume_value = resume_url
-                    path = urlparse(resume_url).path
-                    full_filename = os.path.basename(path)
-
-                    # ✅ Get the last 15 characters of the filename
-                    resume_name = full_filename[-15:] if len(full_filename) >= 15 else full_filename
-
+                    resume_value = doc.Resume
             except MbrDocuments.DoesNotExist:
                 pass
 
@@ -161,7 +150,6 @@ class GetMemberDetailsByCardApi(APIView):
                 "success": True,
                 "is_resume": is_resume,
                 "resume": resume_value,
-                "resume_name": resume_name,
                 "data": member_data
             }, status=status.HTTP_200_OK)
 

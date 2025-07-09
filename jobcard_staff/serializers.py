@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from jobcard_business.models import Job, JobApplication
 from helpers.utils import get_member_details_by_card
-
+import os
+from urllib.parse import urlparse
 
 class JobpostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,12 +17,12 @@ class JobApplicationStaffViewSerializer(serializers.ModelSerializer):
     job_id = serializers.IntegerField(source='job.id', read_only=True)
     full_name = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
-
+    resume_name = serializers.SerializerMethodField()
     class Meta:
         model = JobApplication
         fields = [
             'id', 'job_id', 'job_title', 'company_name', 'member_card',
-            'full_name', 'email','resume', 'cover_letter', 'status', 'applied_at',
+            'full_name', 'email','resume','resume_name', 'cover_letter', 'status', 'applied_at',
             
         ]
 
@@ -42,4 +43,13 @@ class JobApplicationStaffViewSerializer(serializers.ModelSerializer):
             return member_data.get('email')
         except Exception:
             return None
-
+    def get_resume_name(self, obj):
+        resume_url = obj.resume
+        if resume_url and resume_url.strip():
+            try:
+                path = urlparse(resume_url).path
+                full_filename = os.path.basename(path)
+                return full_filename[-15:] if len(full_filename) >= 15 else full_filename
+            except Exception:
+                return None
+        return None
