@@ -21,6 +21,7 @@ class Job(models.Model):
     EDUCATION_LEVEL_CHOICES = [
         ("10th Pass", "10th Pass"),
         ("12th Pass", "12th Pass"),
+        ("ITI", "ITI"),
         ("Diploma", "Diploma"),
         ("Graduate", "Graduate"),
         ("Post Graduate", "Post Graduate"),
