@@ -45,6 +45,26 @@ class JobListCreateAPIView(APIView):
             serializer = serializers.JobpostSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                
+                # Example user info (replace with actual user fields as needed)
+                full_name = "John Doe"
+                email = "john.doe@example.com"
+
+                context = {
+                    "full_name": full_name,
+                    "job_title": job.title,
+                    "company": job.company,
+                    "location": job.location,
+                    "job_url": f"https://jobportal.com/jobs/{job.id}",
+                    "logo_url": "https://yourdomain.com/static/jsjlogo-jobcard.png"
+                }
+
+                send_template_email(
+                    subject="New Job Alert Just for You - JSJCard",
+                    template_name="email_template/job_post.html",
+                    context=context,
+                    recipient_list=[email]
+                )
                 return Response({
                     "success": True,
                     "message": "Job created successfully.",
@@ -171,6 +191,28 @@ class JobApplicationListOfStudent(APIView):
             application = JobApplication.objects.get(id=application_id, job_id=job_id)
             application.status = new_status
             application.save()
+            
+            # === Send Email Notification ===
+            user = application.user
+            full_name = user.get_full_name()
+            email = user.email
+            view_url = f"https://yourdomain.com/student/applications/{application.id}/"
+
+            context = {
+                "full_name": full_name,
+                "application_id": application.id,
+                "status": application.status,
+                "view_url": view_url
+            }
+
+            subject = "📢 Application Status Updated - JSJCard"
+            from_email = "noreply@yourdomain.com"
+            to = [email]
+            html_content = render_to_string("email_template/student_status.html", context)
+
+            msg = EmailMultiAlternatives(subject, "", from_email, to)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
 
             return Response({
                 "success": True,

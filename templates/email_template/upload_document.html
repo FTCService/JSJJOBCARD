@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Document Upload Success</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .header {
+      background-color: #001f3f;
+      color: #00d1b2;
+      padding: 20px;
+      text-align: center;
+    }
+    .header img.logo {
+      max-width: 100px;
+      margin-bottom: 10px;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .content {
+      padding: 30px;
+    }
+    .content h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    .info-box {
+      background-color: #e0f7e9;
+      border-left: 4px solid #2ecc71;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .info-box p {
+      margin: 8px 0;
+      font-size: 15px;
+    }
+    .info-box strong {
+      display: inline-block;
+      width: 130px;
+      color: #2c3e50;
+    }
+    .cta-button {
+      display: block;
+      width: fit-content;
+      margin: 30px auto;
+      background-color: #00d1b2;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .footer {
+      font-size: 12px;
+      text-align: center;
+      color: #ccc;
+      padding: 20px;
+      background-color: #001f3f;
+    }
+    .footer img.logo {
+      max-width: 100px;
+      margin: 15px auto;
+      display: block;
+    }
+    .socials {
+      margin: 10px 0;
+    }
+    .socials a {
+      display: inline-block;
+      margin: 0 6px;
+    }
+    .socials img {
+      width: 22px;
+      vertical-align: middle;
+    }
+    a {
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <img src="./jsjlogo-jobcard.png" alt="JSJCard Logo" class="logo" />
+      <h2>✅ Document Upload Successful</h2>
+    </div>
+    <div class="content">
+      <h3>Dear {{ full_name }},</h3>
+      <p>We’ve successfully received your documents.</p>
+
+      <div class="info-box">
+        <p><strong>Card Number:</strong> {{ card_number }}</p>
+        <p><strong>Status:</strong> Uploaded Successfully</p>
+      </div>
+
+      <p style="text-align:center; font-size:15px; color:#2c3e50;">
+        You can now view and manage your uploaded documents in your dashboard.
+      </p>
+
+      <a href="{{ view_url }}" class="cta-button">View Your Dashboard</a>
+    </div>
+
+    <div class="footer">
+      <p>Connect with us:</p>
+      <div class="socials">
+        <a href="https://www.linkedin.com/company/jsjcard"><img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn"></a>
+        <a href="https://www.youtube.com/@jsjcard"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube"></a>
+        <a href="https://www.facebook.com/share/15edaScWUm/?mibextid=qi2Omg"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook"></a>
+        <a href="https://www.instagram.com/jsjcard?igsh=MWZtZ2k4bjJzN2dvYw=="><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"></a>
+      </div>
+      <p>Sent by JSJCard Team<br>
+        <a href="mailto:support@jsjcard.com">Contact Support</a> | <a href="#">Unsubscribe</a>
+      </p>
+      <img src="https://www.jsjcard.com/assets/images/jsjlogo-jobcard.png" alt="JSJCard Logo" class="logo" />
+    </div>
+  </div>
+</body>
+</html>

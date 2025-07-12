@@ -64,6 +64,7 @@ class MbrDocumentsAPI(APIView):
         Upload or update document URLs for the authenticated member.
         Automatically saves card_number from request.user.
         """
+        
         card_number = request.user.mbrcardno  # Get member's card number
 
         # Get or create the document instance for this card number
@@ -72,7 +73,24 @@ class MbrDocumentsAPI(APIView):
         serializer = serializers.MbrDocumentsSerializer(documents, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save(card_number=card_number)  # Ensure the card_number is always set
-            return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+            
+            # Prepare context for email
+        context = {
+            "full_name": full_name,
+            "card_number": card_number,
+            "view_url": "https://yourdomain.com/dashboard/documents",  # Replace with your actual dashboard link
+            "logo_url": "https://yourdomain.com/static/jsjlogo-jobcard.png",  # Make sure the image is hosted correctly
+        }
+
+        # Send confirmation email using reusable template-based email function
+        send_template_email(
+            subject="✅ Document Upload Successful - JSJCard",
+            template_name="email_template/upload_document.html",
+            context=context,
+            recipient_list=[email]
+        )
+        
+        return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
 
         return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -259,7 +277,7 @@ class JobApplyAPIView(APIView):
                     template_name="email_template/job_applied.html",
                     context=context,
                     recipient_list=[email] 
-                    )
+)
                 return Response({
                     "success": True,
                     "message": "Application submitted successfully."
