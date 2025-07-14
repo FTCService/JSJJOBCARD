@@ -10,6 +10,7 @@ from jobcard_business.authentication import SSOBusinessTokenAuthentication
 from jobcard_staff.serializers import JobpostSerializer
 from jobcard_business import models, serializers
 
+
 class JobListBusinessAPIView(APIView):
     """
     API to list all jobs or create a new job post.
@@ -154,3 +155,67 @@ class EmployerDashboardAPIView(APIView):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class BusinessJobListCreateAPIView(APIView):
+    """
+    API to list or create job posts for the authenticated business.
+    """
+    authentication_classes = [SSOBusinessTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Retrieve all job posts created by the authenticated business.",
+        responses={200: JobpostSerializer()},tags=["Business"]
+    )
+    def get(self, request):
+        """
+        Returns all job posts for the currently authenticated business.
+        """
+        try:
+            business_id = getattr(request.user, 'business_id', None)
+            if not business_id:
+                return Response({"error": "Business ID not found for the user."}, status=400)
+
+            jobs = Job.objects.filter(business_id=business_id)
+            serializer = JobpostSerializer(jobs, many=True)
+
+            return Response({
+                "success": True,
+                "message": "Business job list retrieved successfully.",
+                "business_id": business_id,  # Include business_id in response
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @swagger_auto_schema(
+        operation_description="Create a new job post for the authenticated business.",
+        request_body=JobpostSerializer,
+        responses={200: JobpostSerializer()},tags=["Business"]
+    )
+    def post(self, request):
+        try:
+            business_id = getattr(request.user, 'business_id', None)
+            if not business_id:
+                return Response({"error": "Business ID not found for the user."}, status=400)
+
+            data = request.data.copy()
+            data['business_id'] = business_id  # Inject business ID
+            serializer = JobpostSerializer(data=data)
+
+            if serializer.is_valid():
+                job = serializer.save()
+                return Response({
+                    "success": True,
+                    "message": "Job posted successfully.",
+                    "data": serializer.data
+                }, status=status.HTTP_201_CREATED)
+
+            return Response({
+                "success": False,
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from . import models
 from helpers.utils import get_member_details_by_card
+
  
 class InstitutionJobListSerializer(serializers.ModelSerializer):  # Renamed class
     class Meta:
@@ -39,3 +40,4 @@ class JobApplicationListForBusinessSerializer(serializers.ModelSerializer):
             return member_data.get('email')
         except Exception:
             return None
+        
