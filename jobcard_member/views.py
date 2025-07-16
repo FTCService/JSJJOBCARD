@@ -12,13 +12,15 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from .authentication import SSOMemberTokenAuthentication
 from . import serializers, models
+from . import serializers, models
 from jobcard_business.models import JobApplication, Job
 from jobcard_staff.serializers import JobpostSerializer
 import os
+import json
 from urllib.parse import urlparse
 import re
 from helpers.email import send_template_email
-
+from json.decoder import JSONDecodeError
 
 class MbrDocumentsAPI(APIView):
     """
@@ -64,7 +66,6 @@ class MbrDocumentsAPI(APIView):
         Upload or update document URLs for the authenticated member.
         Automatically saves card_number from request.user.
         """
-        
         card_number = request.user.mbrcardno  # Get member's card number
 
         # Get or create the document instance for this card number
@@ -73,24 +74,7 @@ class MbrDocumentsAPI(APIView):
         serializer = serializers.MbrDocumentsSerializer(documents, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save(card_number=card_number)  # Ensure the card_number is always set
-            
-            # Prepare context for email
-        context = {
-            "full_name": full_name,
-            "card_number": card_number,
-            "view_url": "https://yourdomain.com/dashboard/documents",  # Replace with your actual dashboard link
-            "logo_url": "https://yourdomain.com/static/jsjlogo-jobcard.png",  # Make sure the image is hosted correctly
-        }
-
-        # Send confirmation email using reusable template-based email function
-        send_template_email(
-            subject="✅ Document Upload Successful - JSJCard",
-            template_name="email_template/upload_document.html",
-            context=context,
-            recipient_list=[email]
-        )
-        
-        return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+            return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
 
         return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -266,7 +250,7 @@ class JobApplyAPIView(APIView):
                     resume=resume_to_use
                 )
                 context = {
-                   "full_name": full_name,
+                "full_name": full_name,
                     "mbrcardno": member_card,
                     "institute_id": institute_id or "N/A",
                     "resume": resume_to_use,
@@ -276,8 +260,8 @@ class JobApplyAPIView(APIView):
                     subject="Job Application Confirmation - JSJCard",
                     template_name="email_template/job_applied.html",
                     context=context,
-                    recipient_list=[email] 
-)
+                    recipient_list=[email]
+                    )
                 return Response({
                     "success": True,
                     "message": "Application submitted successfully."
@@ -294,6 +278,45 @@ class JobApplyAPIView(APIView):
                 "message": "Invalid job ID."
             }, status=status.HTTP_404_NOT_FOUND)
 
-        
-        
 
+from django.conf import settings
+import os
+import json
+from json.decoder import JSONDecodeError
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .authentication import SSOMemberTokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from drf_yasg.utils import swagger_auto_schema
+
+
+class CourseDataAPIView(APIView):
+    """
+    API to return all education course data from course_data.json
+    """
+    # authentication_classes = [SSOMemberTokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Returns all education levels and their specializations.",
+        responses={200: "Success"},
+        tags=["Education"]
+    )
+    def get(self, request):  # ✅ FUNCTION STARTS HERE
+        json_path = settings.COURSE_DATA_JSON_PATH  # ✅ INDENTED CORRECTLY
+
+        if not os.path.exists(json_path):
+            return Response({"success": False, "error": "JSON file not found"}, status=404)
+
+        try:
+            with open(json_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+        except JSONDecodeError as e:
+            return Response({"success": False, "error": f"Invalid JSON: {str(e)}"}, status=400)
+
+        return Response({
+            "success": True,
+            "message": "Course data fetched successfully.",
+            "data": data
+        }, status=200)

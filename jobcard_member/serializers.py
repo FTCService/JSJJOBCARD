@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import MbrDocuments
+from .models import Education
 from jobcard_business.models import JobApplication, Job
 from helpers.utils import get_member_details_by_card
 class MbrDocumentsSerializer(serializers.ModelSerializer):
@@ -47,3 +48,10 @@ class JobApplicationListSerializer(serializers.ModelSerializer):
             return member_data.get('email')
         except Exception:
             return None
+        
+
+class EducationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Education
+        fields = '__all__'
+

@@ -148,3 +148,6 @@ AUTH_SERVER_URL =env_vars['AUTH_SERVER_URL']
 
 # cros origin 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# ✅ Course JSON file path (important)
+COURSE_DATA_JSON_PATH = os.path.join(BASE_DIR, 'jobcard_member', 'course_data.json')

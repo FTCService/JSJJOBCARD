@@ -1,0 +1,970 @@
+    {
+    "masters_programs": {
+        "mtech_me": [
+        { "degree": "M.Tech / M.E.", "specialization": "Computer Science Engineering" },
+        { "degree": "M.Tech / M.E.", "specialization": "Mechanical Engineering" },
+        { "degree": "M.Tech / M.E.", "specialization": "Civil Engineering" },
+        { "degree": "M.Tech / M.E.", "specialization": "Electrical Engineering" },
+        { "degree": "M.Tech / M.E.", "specialization": "Electronics & Communication" },
+        { "degree": "M.Tech / M.E.", "specialization": "Artificial Intelligence / Machine Learning" },
+        { "degree": "M.Tech / M.E.", "specialization": "Robotics / Mechatronics" },
+        { "degree": "M.Tech / M.E.", "specialization": "Data Science" },
+        { "degree": "M.Tech / M.E.", "specialization": "VLSI Design" },
+        { "degree": "M.Tech / M.E.", "specialization": "Aerospace Engineering" }
+        ],
+        "msc": [
+        { "degree": "M.Sc.", "specialization": "Physics" },
+        { "degree": "M.Sc.", "specialization": "Chemistry" },
+        { "degree": "M.Sc.", "specialization": "Mathematics" },
+        { "degree": "M.Sc.", "specialization": "Statistics" },
+        { "degree": "M.Sc.", "specialization": "Biology" },
+        { "degree": "M.Sc.", "specialization": "Biotechnology" },
+        { "degree": "M.Sc.", "specialization": "Environmental Science" },
+        { "degree": "M.Sc.", "specialization": "Data Analytics" },
+        { "degree": "M.Sc.", "specialization": "Microbiology" },
+        { "degree": "M.Sc.", "specialization": "Computer Science" },
+        { "degree": "M.Sc.", "specialization": "Nursing / Nutrition / Clinical Research" },
+        { "degree": "M.Sc.", "specialization": "Clinical Research" }
+        ],
+        "mba": [
+        { "degree": "MBA", "specialization": "Marketing" },
+        { "degree": "MBA", "specialization": "Finance" },
+        { "degree": "MBA", "specialization": "Human Resources" },
+        { "degree": "MBA", "specialization": "Operations" },
+        { "degree": "MBA", "specialization": "Business Analytics" },
+        { "degree": "MBA", "specialization": "International Business" },
+        { "degree": "MBA", "specialization": "IT Management" },
+        { "degree": "MBA", "specialization": "Supply Chain Management" }
+        ],
+        "other_masters": [
+        { "degree": "MCA", "specialization": "Computer Applications" },
+        { "degree": "MS", "specialization": "Software Engineering / Data Science / Cybersecurity" },
+        { "degree": "MA", "specialization": "English" },
+        { "degree": "MA", "specialization": "History" },
+        { "degree": "MA", "specialization": "Political Science" },
+        { "degree": "MA", "specialization": "Sociology" },
+        { "degree": "MA", "specialization": "Psychology" },
+        { "degree": "MA", "specialization": "Philosophy" },
+        { "degree": "MA", "specialization": "Public Administration" },
+        { "degree": "M.Com", "specialization": "Accounting" },
+        { "degree": "M.Com", "specialization": "Banking" },
+        { "degree": "M.Com", "specialization": "Taxation" },
+        { "degree": "M.Com", "specialization": "Finance" },
+        { "degree": "M.Com", "specialization": "Economics" },
+        { "degree": "M.Des", "specialization": "Product Design" },
+        { "degree": "M.Des", "specialization": "UX/UI Design" },
+        { "degree": "M.Des", "specialization": "Animation & VFX" },
+        { "degree": "M.Des", "specialization": "Fashion Design" },
+        { "degree": "M.Des", "specialization": "Industrial Design" },
+        { "degree": "MPH", "specialization": "Public Health" },
+        { "degree": "M.Pharm", "specialization": "Pharmacy" },
+        { "degree": "MPT", "specialization": "Physiotherapy" },
+        { "degree": "LL.M", "specialization": "Constitutional Law" },
+        { "degree": "LL.M", "specialization": "International Law" },
+        { "degree": "LL.M", "specialization": "Criminal Law" },
+        { "degree": "LL.M", "specialization": "Corporate Law" }
+        ]
+    },
+    "iti_courses": [
+        {
+        "sl_no": 1,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Mechanic (Motor Vehicle) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 2,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Mechanic Diesel (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 3,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Mechanic (Tractor) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 4,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Pump Operator-Cum-Mechanic (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 5,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Draughtsman (Civil) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 6,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Surveyor(NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 7,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Refrigeration & Air Conditioning Technician(NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 8,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Wood Work Technician (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 9,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Plumber (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 10,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Electronics Mechanic (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 11,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Technician Mechatronics (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 12,
+        "qualification": "10th Fail With Math Science",
+        "type": "Engineering",
+        "trade": "Sheet Metal Worker (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 13,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Welder (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 14,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Information Communication Technology System Maintenance (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 15,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Computer Operator and Programming Assistant (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 16,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Electrician (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 17,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Wireman (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 18,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Instrument Mechanic (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 19,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Draughtsman (Mechanical) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 20,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Fitter (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 21,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Turner (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 22,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Machinist (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 23,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Tool & Die Maker (Press Tools, Jigs & Fixtures) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 24,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Mechanic Machine Tool Maintenance (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 25,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Foundryman (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 26,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Industrial Painter (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 27,
+        "qualification": "10th Fail",
+        "type": "Non Engineering",
+        "trade": "Dress Making (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 28,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Textile Wet Processing Technician (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 29,
+        "qualification": "10th Fail",
+        "type": "Non Engineering",
+        "trade": "Sewing Technology (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 30,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Attendant Operator (Chemical Plant) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 31,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Laboratory Assistant (Chemical Plant) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 32,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Plastic Processing Operator (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 33,
+        "qualification": "10th Pass With Math Science",
+        "type": "Non Engineering",
+        "trade": "Computer Hardware & Network Maintenance (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 34,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Mechanic Mining Machinery (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 35,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Marine Engine Fitter (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 36,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Mechanic Auto Body Painting (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 37,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Mechanic Auto Body Repair (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 38,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Stenographer & Secretarial Assistant (English) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 39,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Baker and Confectioner (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 40,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Mason (Building Constructor) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 41,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Painter General (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 42,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Secretarial Practice (English) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 43,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Lift and Escalator Mechanic (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 44,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Mechanic Agriculture Machinery (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 45,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Cosmetology (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 46,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Desk Top Publishing Operator (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 47,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Health Sanitary Inspector (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 48,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Horticulture (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 49,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Food Production (General) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 50,
+        "qualification": "10th Pass With Math Science",
+        "type": "Non Engineering",
+        "trade": "Internet of Things (Agriculture) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 51,
+        "qualification": "10th Pass With Math Science",
+        "type": "Non Engineering",
+        "trade": "Internet of Things (Healthcare) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 52,
+        "qualification": "10th Pass With Math Science",
+        "type": "Non Engineering",
+        "trade": "Internet of Things (Smart City) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 53,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Smartphone Technician Cum App Tester (NSQF)",
+        "duration": "Six Months"
+        },
+        {
+        "sl_no": 54,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Computer Operator & Programming Assistant (VI & OD) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 55,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Additive Manufacturing Technician Three D Printing (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 56,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Operator Advanced Machine Tools (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 57,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Solar Technician (Electrical) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 58,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Welder (GMAW & GTAW) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 59,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Stone Processing Machine Operator (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 60,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Stone Mining Machine Operator (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 61,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Mechanic Electric Vehicle (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 62,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Advanced CNC Machining Technician(NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 63,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Architectural Draughtsmanship(NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 64,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Technician Electronics System Design Repair(NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 65,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Electrician-Power Distribution(NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 66,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Warehouse Technician(NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 67,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "In Plant Logistics Assistant (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 68,
+        "qualification": "10th Fail",
+        "type": "Non Engineering",
+        "trade": "Welder (Pipe) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 69,
+        "qualification": "10th Fail",
+        "type": "Non Engineering",
+        "trade": "Welder (Structural) (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 70,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Multimedia Animation and Special Effects (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 71,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Instrument Mechanic (Chemical Plant) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 72,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Maintenance Mechanic (Chemical Plant) (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 73,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Manufacturing Process Control & Automation(NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 74,
+        "qualification": "10th Pass With Math Science",
+        "type": "Non Engineering",
+        "trade": "Industrial Robotics & Digital Manufacturing Technician (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 75,
+        "qualification": "10th Pass",
+        "type": "Engineering",
+        "trade": "Central Air-conditioning Plant Mechanic (NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 76,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Geriatric( Old Age) Care (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 77,
+        "qualification": "10th Fail",
+        "type": "Engineering",
+        "trade": "Wood Work Technician (NSQF)",
+        "duration": "One Year"
+        },
+        {
+        "sl_no": 78,
+        "qualification": "10th Pass With Math Science",
+        "type": "Engineering",
+        "trade": "Information Technology(NSQF)",
+        "duration": "Two Years"
+        },
+        {
+        "sl_no": 79,
+        "qualification": "10th Pass",
+        "type": "Non Engineering",
+        "trade": "Fire Technology and Industrial Safety Management (NSQF)",
+        "duration": "Two Years"
+        }
+    ],
+    "diploma_courses": {
+        "engineering": [
+        { "course_type": "Engineering", "specialization": "Computer Engineering" },
+        { "course_type": "Engineering", "specialization": "Mechanical Engineering" },
+        { "course_type": "Engineering", "specialization": "Civil Engineering" },
+        { "course_type": "Engineering", "specialization": "Electrical Engineering" },
+        { "course_type": "Engineering", "specialization": "Electronics & Communication" },
+        { "course_type": "Engineering", "specialization": "Automobile Engineering" },
+        { "course_type": "Engineering", "specialization": "Mechatronics" },
+        { "course_type": "Engineering", "specialization": "Instrumentation Engineering" },
+        { "course_type": "Engineering", "specialization": "Robotics / AI" },
+        { "course_type": "Engineering", "specialization": "Mining Engineering" },
+        { "course_type": "Engineering", "specialization": "Aerospace Engineering" },
+        { "course_type": "Engineering", "specialization": "Marine Engineering" }
+        ],
+        "science": [
+        { "course_type": "Science", "specialization": "Laboratory Technology" },
+        { "course_type": "Science", "specialization": "Environmental Science" },
+        { "course_type": "Science", "specialization": "Forensic Science" },
+        { "course_type": "Science", "specialization": "Biotechnology" },
+        { "course_type": "Science", "specialization": "Food Technology" },
+        { "course_type": "Science", "specialization": "Agriculture Science" }
+        ],
+        "management": [
+        { "course_type": "Management", "specialization": "Business Administration" },
+        { "course_type": "Management", "specialization": "Financial Management" },
+        { "course_type": "Management", "specialization": "Marketing Management" },
+        { "course_type": "Management", "specialization": "Retail Management" },
+        { "course_type": "Management", "specialization": "Supply Chain Management" },
+        { "course_type": "Management", "specialization": "International Business" },
+        { "course_type": "Management", "specialization": "Entrepreneurship" },
+        { "course_type": "Management", "specialization": "HR Management" }
+        ],
+        "computer_it": [
+        { "course_type": "Computer & IT", "specialization": "Computer Applications (DCA)" },
+        { "course_type": "Computer & IT", "specialization": "Information Technology" },
+        { "course_type": "Computer & IT", "specialization": "Software Engineering" },
+        { "course_type": "Computer & IT", "specialization": "Web Designing" },
+        { "course_type": "Computer & IT", "specialization": "Cybersecurity" },
+        { "course_type": "Computer & IT", "specialization": "Cloud Computing" },
+        { "course_type": "Computer & IT", "specialization": "Data Science / Analytics" },
+        { "course_type": "Computer & IT", "specialization": "Game Development" }
+        ],
+        "arts_humanities": [
+        { "course_type": "Arts & Humanities", "specialization": "Psychology" },
+        { "course_type": "Arts & Humanities", "specialization": "Sociology" },
+        { "course_type": "Arts & Humanities", "specialization": "Public Administration" },
+        { "course_type": "Arts & Humanities", "specialization": "Social Work" },
+        { "course_type": "Arts & Humanities", "specialization": "Foreign Languages" }
+        ],
+        "commerce": [
+        { "course_type": "Commerce", "specialization": "Accounting" },
+        { "course_type": "Commerce", "specialization": "Banking & Finance" },
+        { "course_type": "Commerce", "specialization": "Taxation" },
+        { "course_type": "Commerce", "specialization": "E-Commerce" },
+        { "course_type": "Commerce", "specialization": "Investment Management" }
+        ],
+        "design_media": [
+        { "course_type": "Design & Media", "specialization": "Graphic Design" },
+        { "course_type": "Design & Media", "specialization": "Fashion Designing" },
+        { "course_type": "Design & Media", "specialization": "Interior Design" },
+        { "course_type": "Design & Media", "specialization": "UI/UX Design" },
+        { "course_type": "Design & Media", "specialization": "Animation & VFX" },
+        { "course_type": "Design & Media", "specialization": "Photography" }
+        ],
+        "health_paramedical": [
+        { "course_type": "Health & Paramedical", "specialization": "Nursing (GNM / ANM)" },
+        { "course_type": "Health & Paramedical", "specialization": "Medical Laboratory Technology (DMLT)" },
+        { "course_type": "Health & Paramedical", "specialization": "Radiology" },
+        { "course_type": "Health & Paramedical", "specialization": "Physiotherapy" },
+        { "course_type": "Health & Paramedical", "specialization": "Pharmacy (D.Pharm)" },
+        { "course_type": "Health & Paramedical", "specialization": "Nutrition & Dietetics" },
+        { "course_type": "Health & Paramedical", "specialization": "Clinical Research" }
+        ],
+        "law": [
+        { "course_type": "Law", "specialization": "Cyber Law" },
+        { "course_type": "Law", "specialization": "Business Law" },
+        { "course_type": "Law", "specialization": "Labour Law" },
+        { "course_type": "Law", "specialization": "Criminal Law" },
+        { "course_type": "Law", "specialization": "Human Rights" }
+        ],
+        "hospitality": [
+        { "course_type": "Hospitality", "specialization": "Hotel Management" },
+        { "course_type": "Hospitality", "specialization": "Travel & Tourism" },
+        { "course_type": "Hospitality", "specialization": "Aviation & Cabin Crew" },
+        { "course_type": "Hospitality", "specialization": "Front Office Operations" },
+        { "course_type": "Hospitality", "specialization": "Event Management" }
+        ],
+        "education": [
+        { "course_type": "Education", "specialization": "Elementary Education (D.El.Ed)" },
+        { "course_type": "Education", "specialization": "Early Childhood Education" },
+        { "course_type": "Education", "specialization": "Special Education" },
+        { "course_type": "Education", "specialization": "Educational Technology" }
+        ]
+    },
+    "phd_programs": {
+        "engineering_technology": [
+        { "program": "PhD", "field": "Engineering & Technology", "specialization": "Computer Science Engineering" },
+        { "program": "PhD", "field": "Engineering & Technology", "specialization": "Mechanical Engineering" },
+        { "program": "PhD", "field": "Engineering & Technology", "specialization": "Civil Engineering" },
+        { "program": "PhD", "field": "Engineering & Technology", "specialization": "Electrical Engineering" },
+        {
+            "program": "PhD",
+            "field": "Engineering & Technology",
+            "specialization": "Electronics & Communication Engineering"
+        },
+        {
+            "program": "PhD",
+            "field": "Engineering & Technology",
+            "specialization": "Artificial Intelligence / Machine Learning"
+        },
+        { "program": "PhD", "field": "Engineering & Technology", "specialization": "Robotics / Mechatronics" },
+        { "program": "PhD", "field": "Engineering & Technology", "specialization": "Aerospace Engineering" }
+        ],
+        "science": [
+        { "program": "PhD", "field": "Science", "specialization": "Physics" },
+        { "program": "PhD", "field": "Science", "specialization": "Chemistry" },
+        { "program": "PhD", "field": "Science", "specialization": "Mathematics" },
+        { "program": "PhD", "field": "Science", "specialization": "Statistics" },
+        { "program": "PhD", "field": "Science", "specialization": "Biology" },
+        { "program": "PhD", "field": "Science", "specialization": "Biotechnology" },
+        { "program": "PhD", "field": "Science", "specialization": "Environmental Science" },
+        { "program": "PhD", "field": "Science", "specialization": "Zoology" },
+        { "program": "PhD", "field": "Science", "specialization": "Botany" }
+        ],
+        "computer_it": [
+        { "program": "PhD", "field": "Computer & IT", "specialization": "Computer Applications" },
+        { "program": "PhD", "field": "Computer & IT", "specialization": "Data Science" },
+        { "program": "PhD", "field": "Computer & IT", "specialization": "Cybersecurity" }
+        ],
+        "management": [
+        { "program": "PhD", "field": "Management", "specialization": "Business Management" },
+        { "program": "PhD", "field": "Management", "specialization": "Finance" },
+        { "program": "PhD", "field": "Management", "specialization": "Marketing" },
+        { "program": "PhD", "field": "Management", "specialization": "Human Resource Management" }
+        ],
+        "commerce_finance": [
+        { "program": "PhD", "field": "Commerce & Finance", "specialization": "Accounting" },
+        { "program": "PhD", "field": "Commerce & Finance", "specialization": "Banking & Finance" },
+        { "program": "PhD", "field": "Commerce & Finance", "specialization": "Economics" }
+        ],
+        "arts_humanities": [
+        { "program": "PhD", "field": "Arts & Humanities", "specialization": "English" },
+        { "program": "PhD", "field": "Arts & Humanities", "specialization": "History" },
+        { "program": "PhD", "field": "Arts & Humanities", "specialization": "Philosophy" },
+        { "program": "PhD", "field": "Arts & Humanities", "specialization": "Linguistics" },
+        { "program": "PhD", "field": "Arts & Humanities", "specialization": "Sociology" },
+        { "program": "PhD", "field": "Arts & Humanities", "specialization": "Psychology" }
+        ],
+        "social_sciences": [
+        { "program": "PhD", "field": "Social Sciences", "specialization": "Political Science" },
+        { "program": "PhD", "field": "Social Sciences", "specialization": "Public Administration" },
+        { "program": "PhD", "field": "Social Sciences", "specialization": "International Relations" }
+        ],
+        "law": [
+        { "program": "PhD", "field": "Law", "specialization": "Constitutional Law" },
+        { "program": "PhD", "field": "Law", "specialization": "Corporate Law" },
+        { "program": "PhD", "field": "Law", "specialization": "Criminal Law" }
+        ],
+        "design_media": [
+        { "program": "PhD", "field": "Design & Media", "specialization": "Design Theory" },
+        { "program": "PhD", "field": "Design & Media", "specialization": "Digital Media" }
+        ],
+        "health_sciences": [
+        { "program": "PhD", "field": "Health Sciences", "specialization": "Public Health" },
+        { "program": "PhD", "field": "Health Sciences", "specialization": "Pharmaceutical Sciences" },
+        { "program": "PhD", "field": "Health Sciences", "specialization": "Clinical Research" },
+        { "program": "PhD", "field": "Health Sciences", "specialization": "Nursing" }
+        ],
+        "education": [
+        { "program": "PhD", "field": "Education", "specialization": "Educational Leadership" },
+        { "program": "PhD", "field": "Education", "specialization": "Curriculum & Instruction" },
+        { "program": "PhD", "field": "Education", "specialization": "Special Education" }
+        ],
+        "other_fields": [
+        { "program": "PhD", "field": "Environmental Studies", "specialization": "Environmental Policy" },
+        { "program": "PhD", "field": "Agriculture", "specialization": "Agronomy" },
+        { "program": "PhD", "field": "Public Policy", "specialization": "Public Policy & Governance" }
+        ]
+    },
+    "class_12_streams": {
+        "science": {
+        "description": "Best for students interested in engineering, medical, research, or technical careers.",
+        "subjects": [
+            "Physics",
+            "Chemistry",
+            "Mathematics",
+            "Biology",
+            "Computer Science",
+            "English (Compulsory)",
+            "Environmental Studies (in some boards)",
+            "Physical Education (optional)",
+            "Biotechnology",
+            "Electronics (in some schools)",
+            "Informatics Practices"
+        ]
+        },
+        "commerce": {
+        "description": "Best for careers in business, finance, accountancy, banking, or management.",
+        "subjects": [
+            "Accountancy",
+            "Business Studies",
+            "Economics",
+            "Mathematics / Informatics Practices",
+            "English (Compulsory)",
+            "Entrepreneurship",
+            "Commercial Law (some boards)",
+            "Statistics",
+            "Computer Applications"
+        ]
+        },
+        "arts_humanities": {
+        "description": "Best for students interested in social sciences, literature, languages, psychology, and law.",
+        "subjects": [
+            "History",
+            "Geography",
+            "Political Science",
+            "Sociology",
+            "Psychology",
+            "Philosophy",
+            "English (Compulsory)",
+            "Hindi / Regional Language",
+            "Economics (optional in Arts)",
+            "Fine Arts / Music / Dance",
+            "Home Science"
+        ]
+        },
+        "vocational": {
+        "description": "Offered by many State Boards and CBSE. Ideal for early career entry or diploma courses.",
+        "subjects": [
+            "Information Technology (IT)",
+            "Retail",
+            "Agriculture",
+            "Health Care",
+            "Travel & Tourism",
+            "Automobile Technology",
+            "Media & Entertainment",
+            "Beauty & Wellness",
+            "Electrical Technology",
+            "Financial Market Management"
+        ]
+        },
+        "interdisciplinary": {
+        "description": "Hybrid subject combinations across streams allowed in some schools/boards.",
+        "subjects": ["Maths + Economics + Psychology", "Biology + Psychology", "Computer Science + Economics"]
+        }
+    },
+    "bachelors_programs": {
+        "btech_be": [
+        { "degree": "B.Tech / B.E.", "specialization": "Computer Science Engineering" },
+        { "degree": "B.Tech / B.E.", "specialization": "Mechanical Engineering" },
+        { "degree": "B.Tech / B.E.", "specialization": "Civil Engineering" },
+        { "degree": "B.Tech / B.E.", "specialization": "Electrical Engineering" },
+        { "degree": "B.Tech / B.E.", "specialization": "Electronics & Communication" },
+        { "degree": "B.Tech / B.E.", "specialization": "Artificial Intelligence / Machine Learning" },
+        { "degree": "B.Tech / B.E.", "specialization": "Data Science" },
+        { "degree": "B.Tech / B.E.", "specialization": "Robotics / Mechatronics" },
+        { "degree": "B.Tech / B.E.", "specialization": "Aerospace Engineering" },
+        { "degree": "B.Tech / B.E.", "specialization": "Information Technology" },
+        { "degree": "B.Tech / B.E.", "specialization": "Automobile Engineering" }
+        ],
+        "bsc": [
+        { "degree": "B.Sc.", "specialization": "Physics" },
+        { "degree": "B.Sc.", "specialization": "Chemistry" },
+        { "degree": "B.Sc.", "specialization": "Mathematics" },
+        { "degree": "B.Sc.", "specialization": "Biology" },
+        { "degree": "B.Sc.", "specialization": "Statistics" },
+        { "degree": "B.Sc.", "specialization": "Biotechnology" },
+        { "degree": "B.Sc.", "specialization": "Environmental Science" },
+        { "degree": "B.Sc.", "specialization": "Microbiology" },
+        { "degree": "B.Sc.", "specialization": "Zoology" },
+        { "degree": "B.Sc.", "specialization": "Botany" },
+        { "degree": "B.Sc.", "specialization": "Computer Science" },
+        { "degree": "B.Sc.", "specialization": "Data Analytics" }
+        ],
+        "ba": [
+        { "degree": "B.A.", "specialization": "English" },
+        { "degree": "B.A.", "specialization": "History" },
+        { "degree": "B.A.", "specialization": "Political Science" },
+        { "degree": "B.A.", "specialization": "Sociology" },
+        { "degree": "B.A.", "specialization": "Psychology" },
+        { "degree": "B.A.", "specialization": "Philosophy" },
+        { "degree": "B.A.", "specialization": "Public Administration" },
+        { "degree": "B.A.", "specialization": "Geography" },
+        { "degree": "B.A.", "specialization": "Economics" },
+        { "degree": "B.A.", "specialization": "Journalism" },
+        { "degree": "B.A.", "specialization": "Languages" }
+        ],
+        "bcom": [
+        { "degree": "B.Com", "specialization": "Accounting" },
+        { "degree": "B.Com", "specialization": "Banking" },
+        { "degree": "B.Com", "specialization": "Taxation" },
+        { "degree": "B.Com", "specialization": "Finance" },
+        { "degree": "B.Com", "specialization": "Economics" },
+        { "degree": "B.Com", "specialization": "E-Commerce" }
+        ],
+        "bba": [
+        { "degree": "BBA", "specialization": "Marketing" },
+        { "degree": "BBA", "specialization": "Finance" },
+        { "degree": "BBA", "specialization": "Human Resource" },
+        { "degree": "BBA", "specialization": "International Business" },
+        { "degree": "BBA", "specialization": "Operations Management" }
+        ],
+        "bca": [
+        { "degree": "BCA", "specialization": "Computer Applications" },
+        { "degree": "BCA", "specialization": "Information Technology" }
+        ],
+        "design": [
+        { "degree": "B.Des", "specialization": "Product Design" },
+        { "degree": "B.Des", "specialization": "UX/UI Design" },
+        { "degree": "B.Des", "specialization": "Animation & VFX" },
+        { "degree": "B.Des", "specialization": "Fashion Design" },
+        { "degree": "B.Des", "specialization": "Graphic Design" }
+        ],
+        "health_sciences": [
+        { "degree": "B.Pharm", "specialization": "Pharmacy" },
+        { "degree": "B.Pharm", "specialization": "Pharmaceutical Chemistry" },
+        { "degree": "BPT", "specialization": "Physiotherapy" }
+        ],
+        "management_media": [
+        { "degree": "BMS", "specialization": "Management Studies" },
+        { "degree": "BMS", "specialization": "Marketing" },
+        { "degree": "BMS", "specialization": "Business Analytics" },
+        { "degree": "BMM", "specialization": "Mass Media" },
+        { "degree": "BMM", "specialization": "Communication" },
+        { "degree": "BMM", "specialization": "Advertising" }
+        ],
+        "law": [
+        { "degree": "LL.B", "specialization": "Criminal Law" },
+        { "degree": "LL.B", "specialization": "Corporate Law" },
+        { "degree": "LL.B", "specialization": "Civil Law" },
+        { "degree": "LL.B", "specialization": "International Law" }
+        ],
+        "fine_arts": [
+        { "degree": "BFA", "specialization": "Fine Arts" },
+        { "degree": "BFA", "specialization": "Applied Arts" },
+        { "degree": "BFA", "specialization": "Painting" },
+        { "degree": "BFA", "specialization": "Sculpture" }
+        ],
+        "education_architecture": [
+        { "degree": "B.Ed", "specialization": "Education" },
+        { "degree": "B.Ed", "specialization": "Special Education" },
+        { "degree": "B.Arch", "specialization": "Architecture" },
+        { "degree": "B.Arch", "specialization": "Urban Planning" },
+        { "degree": "B.Arch", "specialization": "Interior Design" }
+        ]
+    }
+    }

@@ -23,3 +23,21 @@ class MbrDocuments(models.Model):
 
     CreatedAt = models.DateTimeField(auto_now_add=True)
     UpdatedAt = models.DateTimeField(auto_now=True)
+    
+    
+from django.db import models
+
+class Education(models.Model):
+    education_id = models.CharField(max_length=50)  # e.g., "12th", "bachelors", "iti"
+    education_name = models.CharField(max_length=200)  # e.g., "Bachelor's Degree"
+    education_description = models.TextField(blank=True, null=True)
+
+    specialization_id = models.CharField(max_length=100, unique=True)  # e.g., "bsc-maths", "electrician"
+    specialization_name = models.CharField(max_length=200)
+    specialization_description = models.TextField(blank=True, null=True)
+    eligibility = models.CharField(max_length=255, blank=True, null=True)
+    duration = models.CharField(max_length=100, blank=True, null=True)
+    type = models.CharField(max_length=100, blank=True, null=True)  # e.g., Engineering, Science, Arts
+
+    def __str__(self):
+        return f"{self.specialization_name} ({self.education_name})"
