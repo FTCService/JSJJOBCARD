@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from jobcard_business.models import Job, JobApplication
+from .models import Campaign, CampaignAudience, EmailContent, SMSContent, WhatsAppContent, CampaignDeliveryLog, Inquiry
+
 from helpers.utils import get_member_details_by_card
 import os
 from urllib.parse import urlparse
@@ -53,3 +55,72 @@ class JobApplicationStaffViewSerializer(serializers.ModelSerializer):
             except Exception:
                 return None
         return None
+
+
+class CampaignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Campaign
+        fields = '__all__'
+
+class CampaignAudienceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampaignAudience
+        fields = [
+            'id',
+            'campaign',
+            'user',
+            'added_at',
+        ]
+        read_only_fields = ['id', 'added_at']
+        
+        
+class EmailContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailContent
+        fields = [
+            'id',
+            'campaign',
+            'subject',
+            'body',
+            'footer',
+        ]
+        read_only_fields = ['id']
+        
+class SMSContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMSContent
+        fields = [
+            'id',
+            'campaign',
+            'message',
+        ]
+        read_only_fields = ['id']
+        
+class WhatsAppContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WhatsAppContent
+        fields = [
+            'id',
+            'campaign',
+            'template_name',
+            'message_parameters',
+        ]
+        read_only_fields = ['id']
+        
+class CampaignDeliveryLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampaignDeliveryLog
+        fields = [
+            'id',
+            'campaign',
+            'user',
+            'status',
+            'sent_at',
+            'response_data',
+        ]
+        read_only_fields = ['id']
+        
+class InquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inquiry
+        fields = ['full_name', 'email', 'phone_number', 'service', 'message']
