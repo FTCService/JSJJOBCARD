@@ -11,6 +11,9 @@ from jobcard_staff.serializers import JobpostSerializer
 from jobcard_business import models
 from jobcard_member.serializers import JobApplicationListSerializer
 from helpers.utils import get_member_details_by_card
+
+
+
 class JobListInstituteAPI(APIView):
     """
     API to list all jobs or create a new job post.

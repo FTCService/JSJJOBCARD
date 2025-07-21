@@ -7,5 +7,8 @@ urlpatterns = [
     path('job/list/', views.JoblistAPIView.as_view(), name='job-list'),
     path('job/details/<int:job_id>/', views.JobDetailAPIView.as_view(), name='job-detail'),
     path('apply/job/', views.JobApplyAPIView.as_view(), name='job-apply'),
-
+    path("share-documents/", views.ShareDocumentsAPIView.as_view(), name="share-documents"),
+    path("view-shared-documents/", views.ViewSharedDocumentsAPIView.as_view(), name="view-shared-documents"),
 ]
+   
+
