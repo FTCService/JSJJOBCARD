@@ -19,25 +19,35 @@ class JobListBusinessAPIView(APIView):
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all job postings.",
-        responses={200: JobpostSerializer(many=True)},tags=["Business"]
+        responses={200: JobpostSerializer(many=True)},
+        tags=["Business"]
     )
     def get(self, request):
         try:
             business = request.user.business_id
+            print(f"Authenticated Business ID: {business}")
+
             if not business:
                 return Response({
                     "success": False,
                     "message": "Authenticated user is not associated with a business."
                 }, status=status.HTTP_400_BAD_REQUEST)
-            jobs = models.Job.objects.filter(business_id=business)
+
+            jobs = models.Job.objects.filter(business_id=business).order_by('-created_at')
             serializer = JobpostSerializer(jobs, many=True)
+
             return Response({
                 "success": True,
                 "message": "Job list retrieved successfully.",
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
+
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({
+                "success": False,
+                "message": f"Server error: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @swagger_auto_schema(
         request_body=JobpostSerializer,
         operation_description="Create a new job post.",
@@ -47,6 +57,8 @@ class JobListBusinessAPIView(APIView):
     def post(self, request):
         try:
             business = request.user.business_id
+            print(f"Posting Job for Business ID: {business}")
+
             if not business:
                 return Response({
                     "success": False,
@@ -54,7 +66,7 @@ class JobListBusinessAPIView(APIView):
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             data = request.data.copy()
-            data['business'] = business  # Assign current user's business ID
+            data['business_id'] = business  # Make sure field name matches model
 
             serializer = JobpostSerializer(data=data)
             if serializer.is_valid():
@@ -64,6 +76,10 @@ class JobListBusinessAPIView(APIView):
                     "message": "Job post created successfully.",
                     "data": serializer.data
                 }, status=status.HTTP_201_CREATED)
+
+            # Log serializer errors to console
+            print("Serializer Errors:", serializer.errors)
+
             return Response({
                 "success": False,
                 "message": "Invalid data.",
@@ -73,10 +89,11 @@ class JobListBusinessAPIView(APIView):
         except Exception as e:
             return Response({
                 "success": False,
-                "message": str(e)
+                "message": f"Server error: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-            
+
+                
+                
             
             
 
