@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.utils import timezone
+from datetime import timedelta
 class MbrDocuments(models.Model):
     card_number = models.BigIntegerField(unique=True, verbose_name="Member Card Number", null=True, blank=True)
     TenthCertificate = models.TextField(blank=True, null=True)
@@ -23,3 +24,14 @@ class MbrDocuments(models.Model):
 
     CreatedAt = models.DateTimeField(auto_now_add=True)
     UpdatedAt = models.DateTimeField(auto_now=True)
+    
+    
+class DocumentAccess(models.Model):
+    member = models.ForeignKey(MbrDocuments, on_delete=models.CASCADE)
+    selected_fields = models.JSONField()  # Store field names selected
+    pin = models.CharField(max_length=10)
+    expiry_time = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_valid(self):
+        return timezone.now() < self.expiry_time

@@ -47,3 +47,13 @@ class JobApplicationListSerializer(serializers.ModelSerializer):
             return member_data.get('email')
         except Exception:
             return None
+
+
+
+
+
+
+class DocumentShareSerializer(serializers.Serializer):
+    selected_fields = serializers.ListField(child=serializers.CharField())
+    pin = serializers.CharField()
+    access_time_minutes = serializers.IntegerField()

@@ -18,7 +18,8 @@ import os
 from urllib.parse import urlparse
 import re
 from helpers.email import send_template_email
-
+from django.utils import timezone
+from datetime import timedelta
 
 class MbrDocumentsAPI(APIView):
     """
@@ -279,3 +280,68 @@ class JobApplyAPIView(APIView):
         
         
 
+class ShareDocumentsAPIView(APIView):
+    authentication_classes = [SSOMemberTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    @swagger_auto_schema(
+        operation_description="Share selected documents of a member using card number. Access will be protected with a PIN and expire after the specified time in minutes.",
+        request_body=serializers.DocumentShareSerializer,
+        responses={200: "Document access created"},
+        tags=["Member"]
+    )
+    def post(self, request):
+        serializer = serializers.DocumentShareSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            card_number = request.user.mbrcardno
+            selected_fields = serializer.validated_data["selected_fields"]
+            pin = serializer.validated_data["pin"]
+            minutes = serializer.validated_data["access_time_minutes"]
+
+            try:
+                member = models.MbrDocuments.objects.get(card_number=card_number)
+            except models.MbrDocuments.DoesNotExist:
+                return Response({"error": "Member not found."}, status=404)
+
+            access = models.DocumentAccess.objects.create(
+                member=member,
+                selected_fields=selected_fields,
+                pin=pin,
+                expiry_time=timezone.now() + timedelta(minutes=minutes)
+            )
+            return Response({"message": "Document access created", "access_id": access.id})
+        return Response(serializer.errors, status=400)
+    
+    
+    
+    
+    
+class ViewSharedDocumentsAPIView(APIView):
+    @swagger_auto_schema(
+        operation_description="View shared documents by providing access ID and PIN. Access is only valid for a limited time.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=["access_id", "pin"],
+            properties={
+                "access_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                "pin": openapi.Schema(type=openapi.TYPE_STRING),
+            },
+        ),
+        responses={200: "Documents retrieved successfully", 403: "Access expired", 404: "Invalid access ID or PIN"},
+        tags=["Member"]
+    )
+    def post(self, request):
+        access_id = request.data.get("access_id")
+        pin = request.data.get("pin")
+
+        try:
+            access = models.DocumentAccess.objects.get(id=access_id, pin=pin)
+        except models.DocumentAccess.DoesNotExist:
+            return Response({"error": "Invalid access ID or PIN"}, status=404)
+
+        if not access.is_valid():
+            return Response({"error": "Access expired"}, status=403)
+
+        member = access.member
+        data = {field: getattr(member, field) for field in access.selected_fields}
+        return Response({"documents": data})

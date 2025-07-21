@@ -38,7 +38,47 @@ class JobListBusinessAPIView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    @swagger_auto_schema(
+        request_body=JobpostSerializer,
+        operation_description="Create a new job post.",
+        responses={201: JobpostSerializer()},
+        tags=["Business"]
+    )
+    def post(self, request):
+        try:
+            business = request.user.business_id
+            if not business:
+                return Response({
+                    "success": False,
+                    "message": "Authenticated user is not associated with a business."
+                }, status=status.HTTP_400_BAD_REQUEST)
 
+            data = request.data.copy()
+            data['business'] = business  # Assign current user's business ID
+
+            serializer = JobpostSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "message": "Job post created successfully.",
+                    "data": serializer.data
+                }, status=status.HTTP_201_CREATED)
+            return Response({
+                "success": False,
+                "message": "Invalid data.",
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            
+            
+            
 
 class JobDetailBusinessAPIView(APIView):
     """
