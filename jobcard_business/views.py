@@ -9,6 +9,8 @@ from django.utils.timezone import now
 from jobcard_business.authentication import SSOBusinessTokenAuthentication
 from jobcard_staff.serializers import JobpostSerializer
 from jobcard_business import models, serializers
+from jobcard_member.serializers import MbrDocumentsSerializer
+from jobcard_member.models import MbrDocuments
 
 class JobListBusinessAPIView(APIView):
     """
@@ -211,3 +213,28 @@ class EmployerDashboardAPIView(APIView):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+
+class GetMemberDocumentsAPIView(APIView):
+    """
+    API to fetch documents for a member by card number.
+    """
+    authentication_classes = [SSOBusinessTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        responses={200: MbrDocumentsSerializer()},
+        tags=["Job Profile Management"]
+    )
+    def get(self, request, card_number):
+        try:
+            documents = MbrDocuments.objects.get(card_number=card_number)
+            serializer = MbrDocumentsSerializer(documents)
+            return Response({
+            "success": True,
+            "message": "Documents fetched successfully.",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
+
+        except MbrDocuments.DoesNotExist:
+            return Response({"success":False, "message": "Documents not found for this Card Number."}, status=status.HTTP_200_OK)
