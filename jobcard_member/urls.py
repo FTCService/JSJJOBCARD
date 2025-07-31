@@ -9,6 +9,8 @@ urlpatterns = [
     path('apply/job/', views.JobApplyAPIView.as_view(), name='job-apply'),
     path("share-documents/", views.ShareDocumentsAPIView.as_view(), name="share-documents"),
     path("view-shared-documents/", views.ViewSharedDocumentsAPIView.as_view(), name="view-shared-documents"),
+    
+    # ✅ Member feedback submit/view
+    path("feedback/", views.FeedbackAPI.as_view(), name="member-feedback"),
 ]
-   
 

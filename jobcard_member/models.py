@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django.utils import timezone
 from datetime import timedelta
 class MbrDocuments(models.Model):
@@ -35,3 +36,26 @@ class DocumentAccess(models.Model):
 
     def is_valid(self):
         return timezone.now() < self.expiry_time
+    
+    
+class Feedback(models.Model):
+    card_number = models.BigIntegerField(
+        unique=True,
+        verbose_name="Member Card Number",
+        null=True,
+        blank=True
+    )
+    business_id = models.CharField(max_length=100)
+    email = models.EmailField()
+    name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15)
+    happiness_rating = models.IntegerField(blank=True, null=True)
+    has_issues = models.BooleanField(blank=True, null=True)
+    issues_description = models.TextField(blank=True, null=True)
+    liked_most = models.TextField(blank=True, null=True)
+    suggestions = models.TextField(blank=True, null=True)
+    answers = models.JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.card_number})"

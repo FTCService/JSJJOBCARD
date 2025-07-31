@@ -15,6 +15,7 @@ from . import serializers, models
 from jobcard_business.models import JobApplication, Job
 from jobcard_staff.serializers import JobpostSerializer
 import os
+import json
 from urllib.parse import urlparse
 import re
 from helpers.email import send_template_email
@@ -345,3 +346,97 @@ class ViewSharedDocumentsAPIView(APIView):
         member = access.member
         data = {field: getattr(member, field) for field in access.selected_fields}
         return Response({"documents": data})
+
+
+class FeedbackAPI(APIView):
+    """
+    API to handle Member Feedback (Retrieve, Submit, Load Questions from JSON).
+    """
+    authentication_classes = [SSOMemberTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Retrieve feedback submitted by the authenticated member OR load feedback questions from JSON using `?questions=true`. Optionally get feedback by `business_id` query param.",
+        manual_parameters=[
+            openapi.Parameter('questions', openapi.IN_QUERY, description="If true, returns questions JSON", type=openapi.TYPE_BOOLEAN),
+            openapi.Parameter('business_id', openapi.IN_QUERY, description="Business ID to retrieve member feedback", type=openapi.TYPE_STRING)
+        ],
+        responses={200: openapi.Response(description="Feedback or Questions")},
+        tags=["Member Feedback"]
+    )
+    def get(self, request):
+        # Return questions JSON
+        if request.query_params.get('questions') == 'true':
+            try:
+                filepath = os.path.join(settings.BASE_DIR, 'jobcard_member', 'questions.json')
+                with open(filepath, 'r') as file:
+                    questions = json.load(file)
+                return Response({"success": True, "questions": questions}, status=status.HTTP_200_OK)
+            except FileNotFoundError:
+                return Response({"success": False, "error": "questions.json not found"}, status=status.HTTP_404_NOT_FOUND)
+            except json.JSONDecodeError:
+                return Response({"success": False, "error": "Invalid JSON format"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            business_id = request.query_params.get('business_id')
+            if business_id:
+                member_data = get_member_details_by_business_id(business_id)
+                card_number = member_data.get("card_number")
+                if not card_number:
+                    return Response({"success": False, "error": "Member not found for this business_id."}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                card_number = request.user.mbrcardno
+
+            feedback = models.Feedback.objects.filter(card_number=card_number).first()
+
+            if not feedback:
+                return Response({"success": True, "data": {}}, status=status.HTTP_200_OK)
+
+            serializer = serializers.FeedbackSerializer(feedback)
+            return Response({"success": True, "data": serializer.data}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @swagger_auto_schema(
+        operation_description="Submit or update feedback. Auto-fills name, email, phone from member card.",
+        request_body=serializers.FeedbackSerializer,
+        responses={200: openapi.Response(description="Feedback saved")},
+        tags=["Member Feedback"]
+    )
+    def post(self, request):
+        try:
+            card_number = request.user.mbrcardno
+            member_data = get_member_details_by_card(card_number)
+
+            full_name = member_data.get("full_name", "")
+            email = member_data.get("email", "")
+            phone = member_data.get("mobile_number", "")
+
+            feedback, _ = models.Feedback.objects.get_or_create(card_number=card_number)
+            serializer = serializers.FeedbackSerializer(feedback, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save(
+                    card_number=card_number,
+                    name=full_name,
+                    email=email,
+                    phone_number=phone
+                )
+                return Response({
+                    "success": True,
+                    "message": "Feedback submitted successfully.",
+                    "data": serializer.data
+                }, status=status.HTTP_200_OK)
+
+            return Response({
+                "success": False,
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": "Something went wrong.",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

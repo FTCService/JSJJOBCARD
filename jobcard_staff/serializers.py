@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from jobcard_business.models import Job, JobApplication
+from .models import Candidate
 from helpers.utils import get_member_details_by_card
 import os
 from urllib.parse import urlparse
@@ -53,3 +54,9 @@ class JobApplicationStaffViewSerializer(serializers.ModelSerializer):
             except Exception:
                 return None
         return None
+
+
+class CandidateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Candidate
+        fields = ['id', 'name', 'mobile', 'email', 'user_type', 'status', 'comment']

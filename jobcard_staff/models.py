@@ -1,4 +1,4 @@
-# from django.db import models
+from django.db import models
 
 
 
@@ -64,3 +64,27 @@
 #     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 #     sent_at = models.DateTimeField(null=True, blank=True)
 #     response_data = models.JSONField(blank=True, null=True)  # store raw API responses
+
+
+class Candidate(models.Model):
+    USER_TYPE_CHOICES = [
+        ('Business', 'Business'),
+        ('Member', 'Member'),
+        ('Institute', 'Institute'),
+    ]
+
+    LEAD_STATUS_CHOICES = [
+        ('Hot', 'Hot'),
+        ('Cold', 'Cold'),
+        ('Neutral', 'Neutral'),
+    ]
+
+    name = models.CharField(max_length=100)
+    mobile = models.CharField(max_length=15)
+    email = models.EmailField()
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
+    status = models.CharField(max_length=10, choices=LEAD_STATUS_CHOICES, default='Neutral')
+    comment = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.user_type})"

@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "question": "Name",
+    "odia": "ନାମ",
+    "type": "text"
+  },
+  {
+    "id": 2,
+    "question": "Phone Number",
+    "odia": "ଫୋନ ନମ୍ବର",
+    "type": "text"
+  },
+  {
+    "id": 3,
+    "question": "How happy are you with your current job placement?",
+    "odia": "ପ୍ରତିଷ୍ଠାନ ନିଯୁକ୍ତି ଉପରେ ଆପଣ କେତେ ଖୁସି?",
+    "type": "rating",
+    "scale": [1, 10],
+    "description": "1 = Very Unhappy (ବହୁତ ଅସନ୍ତୁଷ୍ଟ), 10 = Very Happy (ବହୁତ ଖୁସି)"
+  },
+  {
+    "id": 4,
+    "question": "Are you facing any issues with your current placement?",
+    "odia": "ନିଜ ନିଯୁକ୍ତି ସହ ଆପଣ କିଛି ସମସ୍ୟା ଅନୁଭବ କରୁଛନ୍ତି କି?",
+    "type": "boolean",
+    "options": ["Yes (ହଁ)", "No (ନା)"]
+  },
+  {
+    "id": 5,
+    "question": "If yes, please specify the issue(s) you are facing",
+    "odia": "ଯଦି ହଁ, ଦୟାକରି ଅନୁଭବ କରୁଥିବା ସମସ୍ୟା ବିଷୟରେ ଲେଖନ୍ତୁ",
+    "type": "text"
+  },
+  {
+    "id": 6,
+    "question": "What do you like most about your current role or workplace?",
+    "odia": "ଆପଣ ନିଜ ଭୂମିକା କିମ୍ବା କାର୍ଯ୍ୟସ୍ଥଳ ରେ ସବୁଠାରୁ ଅଧିକ କଣ ପସନ୍ଦ କରନ୍ତି?",
+    "type": "text"
+  },
+  {
+    "id": 7,
+    "question": "Any suggestions to improve the placement process or work environment?",
+    "odia": "ପ୍ଲେସମେଣ୍ଟ ପ୍ରକ୍ରିୟା କିମ୍ବା କାର୍ଯ୍ୟପରିବେଶ ସୁଧାରିବା ପାଇଁ ଆପଣଙ୍କର କିଛି ସୁପାରିଶ ଅଛି କି?",
+    "type": "text"
+  }
+]
