@@ -142,3 +142,18 @@ class JobApplication(models.Model):
         return f"{self.member_card} applied to {self.job.title}"
 
     
+
+class Feedback(models.Model):
+    HAPPINESS_CHOICES = [(i, str(i)) for i in range(1, 11)]  # 1 to 10 rating
+
+    card_number = models.BigIntegerField(verbose_name="Member Card Number")
+    business_id = models.IntegerField(max_length=100, verbose_name="Business ID", blank=True, null=True)
+    happiness_rating = models.IntegerField(choices=HAPPINESS_CHOICES, verbose_name="Happiness Rating")
+    has_issues = models.BooleanField(verbose_name="Facing any issues?")
+    issues_detail = models.TextField(blank=True, null=True, verbose_name="Issue Details")
+    liked_most = models.TextField(blank=True, null=True, verbose_name="What do you like most?")
+    suggestions = models.TextField(blank=True, null=True, verbose_name="Suggestions for improvement")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.card_number} - {self.happiness_rating}/10"

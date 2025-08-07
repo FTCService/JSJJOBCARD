@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from .authentication import SSOMemberTokenAuthentication
 from . import serializers, models
-from jobcard_business.models import JobApplication, Job
+from jobcard_business.models import JobApplication, Job, Feedback
 from jobcard_staff.serializers import JobpostSerializer
 import os
 from urllib.parse import urlparse
@@ -345,3 +345,75 @@ class ViewSharedDocumentsAPIView(APIView):
         member = access.member
         data = {field: getattr(member, field) for field in access.selected_fields}
         return Response({"documents": data})
+
+
+
+class FeedbackView(APIView):
+    """
+    Submit feedback or view feedback by card number
+    """
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SSOMemberTokenAuthentication]
+
+    @swagger_auto_schema(
+        operation_summary="Get feedback by user card number and business ID",
+        manual_parameters=[
+            openapi.Parameter(
+                'businessId',
+                openapi.IN_QUERY,
+                description="Business ID",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: serializers.FeedbackSerializer(many=True)}
+    )
+    def get(self, request):
+        business_id = request.query_params.get("businessId")
+        card_number = request.user.mbrcardno
+        member_data = get_member_details_by_card(card_number)
+        full_name = member_data.get('full_name')
+        mobile_number = member_data.get('mobile_number')
+        if not business_id:
+            return Response({"error": "businessId query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        feedbacks = Feedback.objects.filter(card_number=card_number, business_id=business_id).order_by('-created_at')
+        serializer = serializers.FeedbackSerializer(feedbacks, many=True)
+
+        return Response({
+            "full_name": full_name,
+            "mobile_number": mobile_number,
+            "business_id": business_id,
+            "feedbacks": serializer.data
+        }, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(
+        operation_summary="Submit Feedback",
+        request_body=serializers.FeedbackSerializer,
+        responses={201: serializers.FeedbackSerializer}
+    )
+    def post(self, request):
+        business_id = request.query_params.get("businessId")
+        card_number = request.user.mbrcardno
+
+        if not business_id or not card_number:
+            return Response({"error": "Missing businessId or card_number"}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = request.data.copy()
+        data['business_id'] = business_id
+        data['card_number'] = card_number
+
+        serializer = serializers.FeedbackSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Feedback submitted successfully", "data": serializer.data},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    
+
+
+
