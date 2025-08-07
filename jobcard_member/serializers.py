@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import MbrDocuments
-from jobcard_business.models import JobApplication, Job
+from jobcard_business.models import JobApplication, Job, Feedback
 from helpers.utils import get_member_details_by_card
 class MbrDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,3 +57,25 @@ class DocumentShareSerializer(serializers.Serializer):
     selected_fields = serializers.ListField(child=serializers.CharField())
     pin = serializers.CharField()
     access_time_minutes = serializers.IntegerField()
+    
+    
+    
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = [
+            'card_number',
+            'business_id',
+            'happiness_rating',
+            'has_issues',
+            'issues_detail',
+            'liked_most',
+            'suggestions'
+            
+        ]
+        extra_kwargs = {
+            'card_number': {'required': False},
+            'business_id': {'required': False},
+        }
