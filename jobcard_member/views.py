@@ -56,48 +56,80 @@ class MbrDocumentsAPI(APIView):
         return Response({"success": True, "data": data}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        operation_description="Upload or update document URLs for the authenticated member",
-        request_body=serializers.MbrDocumentsSerializer,
-        responses={200: serializers.MbrDocumentsSerializer()},tags=["Member"]
+    operation_description="Upload or update document URLs for the authenticated member",
+    request_body=serializers.MbrDocumentsSerializer,
+    responses={200: serializers.MbrDocumentsSerializer()},
+    tags=["Member"]
     )
     def post(self, request):
         """
         Upload or update document URLs for the authenticated member.
-        Automatically saves card_number from request.user.
+        Existing documents are preserved if not included in the request.
         """
         card_number = request.user.mbrcardno  # Get member's card number
 
         # Get or create the document instance for this card number
         documents, created = models.MbrDocuments.objects.get_or_create(card_number=card_number)
 
-        serializer = serializers.MbrDocumentsSerializer(documents, data=request.data, partial=True)
+        # Convert existing data to dict
+        existing_data = serializers.MbrDocumentsSerializer(documents).data
+
+        # Merge request data with existing data
+        merged_data = {}
+        for field in existing_data:
+            if field == "card_number":
+                continue  # Skip read-only
+            if field in request.data and request.data[field] not in [None, ""]:
+                merged_data[field] = request.data[field]
+            else:
+                merged_data[field] = existing_data[field]
+
+        # Save updated data
+        serializer = serializers.MbrDocumentsSerializer(documents, data=merged_data, partial=True)
         if serializer.is_valid():
-            serializer.save(card_number=card_number)  # Ensure the card_number is always set
-            return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+            serializer.save(card_number=card_number)
+            return Response({
+                "success": True,
+                "message": "Documents updated successfully",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
 
         return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     
     
     
 class JoblistAPIView(APIView):
     """
-    API for a member list of job.
+    API for a member list of job with their application status.
     """
     authentication_classes = [SSOMemberTokenAuthentication]
     permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(
-        operation_description="Retrieve a list of all job postings.",
-        responses={200: JobpostSerializer(many=True)},tags=["Member"]
+        operation_description="Retrieve a list of all job postings with the current member's application status.",
+        responses={200: JobpostSerializer(many=True)},
+        tags=["Member"]
     )
     def get(self, request):
         try:
-            jobs = Job.objects.all()
-            serializer = JobpostSerializer(jobs, many=True)
+            member_card = request.user.mbrcardno
+            jobs = Job.objects.all().order_by('-created_at')
+            job_list = []
+
+            for job in jobs:
+                # Check if member has applied to this job
+                application = JobApplication.objects.filter(job=job, member_card=member_card).first()
+                job_data = JobpostSerializer(job).data
+                job_data['status'] = application.status if application else None
+                job_list.append(job_data)
+
             return Response({
                 "success": True,
                 "message": "Job list retrieved successfully.",
-                "data": serializer.data
+                "data": job_list
             }, status=status.HTTP_200_OK)
+
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
