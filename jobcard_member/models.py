@@ -2,6 +2,11 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 class MbrDocuments(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("processing", "Processing"),
+        ("verified", "Verified"),
+    ]
     card_number = models.BigIntegerField(unique=True, verbose_name="Member Card Number", null=True, blank=True)
     TenthCertificate = models.TextField(blank=True, null=True)
     TwelfthCertificate = models.TextField(blank=True, null=True)
@@ -15,7 +20,12 @@ class MbrDocuments(models.Model):
     DiplomaMarksheet = models.TextField(blank=True, null=True)
     CoverLetter = models.TextField(blank=True, null=True)
     Resume = models.TextField(blank=True, null=True)
-
+    # Status field
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
     # Links
     AdharcardVoterid = models.TextField(blank=True, null=True)
     LinkedinUrl = models.URLField(blank=True, null=True)

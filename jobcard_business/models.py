@@ -147,7 +147,7 @@ class Feedback(models.Model):
     HAPPINESS_CHOICES = [(i, str(i)) for i in range(1, 11)]  # 1 to 10 rating
 
     card_number = models.BigIntegerField(verbose_name="Member Card Number")
-    business_id = models.IntegerField(max_length=100, verbose_name="Business ID", blank=True, null=True)
+    business_id = models.IntegerField( verbose_name="Business ID", blank=True, null=True)
     happiness_rating = models.IntegerField(choices=HAPPINESS_CHOICES, verbose_name="Happiness Rating")
     has_issues = models.BooleanField(verbose_name="Facing any issues?")
     issues_detail = models.TextField(blank=True, null=True, verbose_name="Issue Details")
