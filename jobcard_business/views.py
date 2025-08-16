@@ -11,6 +11,7 @@ from jobcard_staff.serializers import JobpostSerializer
 from jobcard_business import models, serializers
 from jobcard_member.serializers import MbrDocumentsSerializer
 from jobcard_member.models import MbrDocuments
+from helpers.utils import get_member_details_by_mobile, get_member_details_by_card, get_business_details_by_id
 
 class JobListBusinessAPIView(APIView):
     """
@@ -217,7 +218,7 @@ class EmployerDashboardAPIView(APIView):
 
 class GetMemberDocumentsAPIView(APIView):
     """
-    API to fetch documents for a member by card number.
+    API to fetch documents for a member by card number or mobile number.
     """
     authentication_classes = [SSOBusinessTokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -227,14 +228,41 @@ class GetMemberDocumentsAPIView(APIView):
         tags=["Job Profile Management"]
     )
     def get(self, request, card_number):
+        card_no = str(card_number).strip()
+
+        # ✅ Decide whether it's a card number or mobile number
+        mbrcardno = None
+        if len(card_no) == 16 and card_no.isdigit():
+            # Directly use as card number
+            mbrcardno = card_no
+        elif len(card_no) == 10 and card_no.isdigit():
+            # Lookup by mobile number
+            member_data = get_member_details_by_mobile(card_no)
+            mbrcardno = member_data.get("mbrcardno") if member_data else None
+        else:
+            return Response(
+                {"error": "Invalid input. Provide a valid 16-digit card number or 10-digit mobile number."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not mbrcardno:
+            return Response(
+                {"success": False, "message": "Member not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # ✅ Fetch documents
         try:
-            documents = MbrDocuments.objects.get(card_number=card_number)
+            documents = MbrDocuments.objects.get(card_number=mbrcardno)
             serializer = MbrDocumentsSerializer(documents)
             return Response({
-            "success": True,
-            "message": "Documents fetched successfully.",
-            "data": serializer.data
-        }, status=status.HTTP_200_OK)
+                "success": True,
+                "message": "Documents fetched successfully.",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
 
         except MbrDocuments.DoesNotExist:
-            return Response({"success":False, "message": "Documents not found for this Card Number."}, status=status.HTTP_200_OK)
+            return Response(
+                {"success": False, "message": "Documents not found for this member."},
+                status=status.HTTP_404_NOT_FOUND
+            )
