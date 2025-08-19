@@ -161,20 +161,25 @@ class Feedback(models.Model):
     
 class HRFeedback(models.Model):
     candidate_name = models.CharField(max_length=255, verbose_name="Candidate Name")
-    card_number = models.BigIntegerField(verbose_name="Card Number")
-    company_name = models.CharField(max_length=255, verbose_name="Company Name")
-    job_title = models.CharField(max_length=255, verbose_name="Job Title")
-    employee_id = models.CharField(max_length=100, verbose_name="Employee ID")
-    feedback_questions = models.JSONField(
-        default=dict,
-        help_text="Store feedback questions and answers as JSON, e.g., {'Question 1': 'Answer'}"
-    )
-    comments = models.TextField(blank=True, null=True, verbose_name="Additional Comments")
+    card_number = models.BigIntegerField(unique=True, verbose_name="Card Number")  # unique per candidate
+    feedbacks = models.JSONField(default=list,help_text="""Store multiple company feedbacks as a list of dicts. 
+    Each dict can include company info, job info, feedback, comments, and business ID, e.g.:
 
+    [
+        {
+            'company_name': 'ABC',
+            'job_title': 'Developer',
+            'employee_id': 'E123',
+            'feedback_questions': {'Question 1': 'Answer'},
+            'comments': 'Good candidate',
+            'business_id': 101365
+        },
+   
+    ]
+    """
+)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    requested_by = models.IntegerField(verbose_name="Business Id")
-
     def __str__(self):
-        return f"{self.candidate_name} - {self.company_name} - {self.job_title}"
+        return f"{self.candidate_name} - {self.card_number}"
