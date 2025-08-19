@@ -290,17 +290,20 @@ class GetMemberDocumentsAPIView(APIView):
 
         mbrcardno = None
         full_name = None 
-        if len(card_number) == 16 and card_number.isdigit():
+        card_number_str = str(card_number)
+
+        if len(card_number_str) == 16 and card_number_str.isdigit():
             # Directly use as card number
-            mbrcardno = card_number
-        elif len(card_number) == 10 and card_number.isdigit():
+            mbrcardno = card_number_str
+        elif len(card_number_str) == 10 and card_number_str.isdigit():
             # Lookup by mobile number
-            member_data = get_member_details_by_mobile(card_number)
+            member_data = get_member_details_by_mobile(card_number_str)
             mbrcardno = member_data.get("mbrcardno") if member_data else None
-           
         else:
-            return Response({"success": False, "message": " documents are required"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"success": False, "message": "documents are required"},
+                status=status.HTTP_400_BAD_REQUEST
+    )
 
         # Create the verification request
         doc_request = DocumentVerificationRequest.objects.create(
