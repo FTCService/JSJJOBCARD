@@ -7,9 +7,9 @@ from drf_yasg import openapi
 from jobcard_business.models import Job, JobApplication
 from . import serializers
 from .authentication import SSOUserTokenAuthentication
-from jobcard_member.models import MbrDocuments
+from jobcard_member.models import MbrDocuments, DocumentVerificationRequest
 from jobcard_member.serializers import MbrDocumentsSerializer
-
+from helpers.utils import get_business_details_by_id
 
 
 class JobListCreateAPIView(APIView):
@@ -236,3 +236,97 @@ class MbrDocumentsAPI(APIView):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
+
+
+
+
+
+
+
+class StaffDocumentVerificationListAPIView(APIView):
+    """
+    View all requested document verifications.
+    """
+    authentication_classes = [SSOUserTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        requests = DocumentVerificationRequest.objects.all().order_by('-created_at')
+
+        data = []
+        for r in requests:
+            # Fetch current document statuses
+            try:
+                mbr_docs = MbrDocuments.objects.get(card_number=r.card_number)
+                doc_status = mbr_docs.document_status
+            except MbrDocuments.DoesNotExist:
+                doc_status = {}
+            request_by = get_business_details_by_id(r.requested_by)
+            business_name = request_by.get('business_name', 'Unknown') if request_by else 'Unknown'
+            data.append({
+                "request_id": r.id,
+                "card_number": r.card_number,
+                "documents": r.documents,  # JSON of requested documents
+                "status": r.status,
+                "requested_by": business_name ,
+                "requested_at": r.created_at,
+                "document_status": doc_status  # Current status from MbrDocuments
+            })
+
+        return Response({
+            "success": True,
+            "message": "Document verification requests fetched successfully.",
+            "data": data
+        }, status=status.HTTP_200_OK)
+
+
+
+
+class StaffUpdateDocumentStatusAPIView(APIView):
+    authentication_classes = [SSOUserTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, card_number):
+        """View all requested document verifications for the logged-in staff"""
+        
+        requests = DocumentVerificationRequest.objects.filter(card_number=card_number)
+        data = [{"id": r.id, "documents": r.documents, "status": r.status} for r in requests]
+
+        return Response({
+            "success": True,
+            "message": "Document verification requests fetched.",
+            "data": data
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request, card_number):
+        """Update the status of an individual document"""
+        request_id = request.data.get("request_id")
+        document_name = request.data.get("document_name")
+        status_value = request.data.get("status")  # "verified" or "rejected"
+
+        if not request_id or not document_name or not status_value:
+            return Response({"success": False, "message": "All fields are required"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            doc_request = DocumentVerificationRequest.objects.get(id=request_id, card_number=card_number)
+        except DocumentVerificationRequest.DoesNotExist:
+            return Response({"success": False, "message": "Request not found"},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        # Update the document status
+        doc_request.documents[document_name] = status_value
+        doc_request.save(update_fields=["documents", "updated_at"])
+
+        # Also update the main MbrDocuments table
+        mbr_docs = MbrDocuments.objects.get(card_number=doc_request.card_number)
+        doc_status = mbr_docs.document_status or {}
+        doc_status[document_name] = status_value
+        mbr_docs.document_status = doc_status
+        mbr_docs.save(update_fields=["document_status", "UpdatedAt"])
+
+        return Response({
+            "success": True,
+            "message": f"{document_name} updated to {status_value}",
+            "document_status": doc_status
+        }, status=status.HTTP_200_OK)

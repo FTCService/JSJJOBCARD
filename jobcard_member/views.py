@@ -65,8 +65,9 @@ class MbrDocumentsAPI(APIView):
         """
         Upload or update document URLs for the authenticated member.
         Existing documents are preserved if not included in the request.
+        Only actual documents are tracked in document_status.
         """
-        card_number = request.user.mbrcardno  # Get member's card number
+        card_number = request.user.mbrcardno
 
         # Get or create the document instance for this card number
         documents, created = models.MbrDocuments.objects.get_or_create(card_number=card_number)
@@ -74,15 +75,37 @@ class MbrDocumentsAPI(APIView):
         # Convert existing data to dict
         existing_data = serializers.MbrDocumentsSerializer(documents).data
 
-        # Merge request data with existing data
+        # Initialize or copy existing document_status
+        document_status = documents.document_status or {}
+
+        # Define actual document fields to track
+        document_fields = [
+            "TenthCertificate",
+            "TwelfthCertificate",
+            "GraduationCertificate",
+            "GraduationMarksheet",
+            "PgCertificate",
+            "UpskillCertificate",
+            "ItiCertificate",
+            "ItiMarksheet",
+            "DiplomaCertificate",
+            "DiplomaMarksheet",
+            "CoverLetter",
+            "Resume"
+        ]
+
         merged_data = {}
-        for field in existing_data:
-            if field == "card_number":
-                continue  # Skip read-only
+        for field in document_fields:
             if field in request.data and request.data[field] not in [None, ""]:
                 merged_data[field] = request.data[field]
+                document_status[field] = "pending"  # new upload → pending
             else:
-                merged_data[field] = existing_data[field]
+                merged_data[field] = existing_data.get(field)
+                if field not in document_status:
+                    document_status[field] = "pending"
+
+        # Include updated document_status in merged_data
+        merged_data["document_status"] = document_status
 
         # Save updated data
         serializer = serializers.MbrDocumentsSerializer(documents, data=merged_data, partial=True)
