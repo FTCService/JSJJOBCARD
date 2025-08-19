@@ -288,13 +288,23 @@ class GetMemberDocumentsAPIView(APIView):
         documents = request.data.get("documents")
         requested_by = request.user.business_id  # HR user ID
 
-        if not card_number or not documents:
-            return Response({"success": False, "message": "card_number and documents are required"},
+        mbrcardno = None
+        full_name = None 
+        if len(card_number) == 16 and card_number.isdigit():
+            # Directly use as card number
+            mbrcardno = card_number
+        elif len(card_number) == 10 and card_number.isdigit():
+            # Lookup by mobile number
+            member_data = get_member_details_by_mobile(card_number)
+            mbrcardno = member_data.get("mbrcardno") if member_data else None
+           
+        else:
+            return Response({"success": False, "message": " documents are required"},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # Create the verification request
         doc_request = DocumentVerificationRequest.objects.create(
-            card_number=card_number,
+            card_number=mbrcardno,
             requested_by=requested_by,
             documents=documents
         )
