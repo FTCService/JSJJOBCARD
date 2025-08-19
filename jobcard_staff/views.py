@@ -287,10 +287,13 @@ class StaffUpdateDocumentStatusAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, card_number):
-        """View all requested document verifications + only requested member documents"""
+        """
+        View all requested document verifications + return requested files with their status.
+        """
         try:
             mbr_docs = MbrDocuments.objects.get(card_number=card_number)
             mbr_docs_data = MbrDocumentsSerializer(mbr_docs).data
+            doc_status_data = mbr_docs_data.get("document_status", {}) or {}
         except MbrDocuments.DoesNotExist:
             return Response({
                 "success": False,
@@ -307,17 +310,19 @@ class StaffUpdateDocumentStatusAPIView(APIView):
 
         response_data = []
         for req in requests:
-            requested_docs = req.documents  # dict of requested docs
-            matched_docs = {
-                doc_name: mbr_docs_data.get(doc_name, "")  # pick only requested ones
-                for doc_name in requested_docs.keys()
-            }
+            requested_docs = req.documents or {}  # dict of requested docs
+
+            documents_info = {}
+            for doc_name in requested_docs.keys():
+                documents_info[doc_name] = {
+                    "file": mbr_docs_data.get(doc_name, ""),
+                    "status": doc_status_data.get(doc_name, "pending")
+                }
 
             response_data.append({
                 "id": req.id,
-                "documents_requested": requested_docs,
                 "status": req.status,
-                "requested_files": matched_docs,   # ✅ only requested files with URL
+                "documents": documents_info
             })
 
         return Response({
@@ -325,6 +330,7 @@ class StaffUpdateDocumentStatusAPIView(APIView):
             "message": "Document verification requests fetched.",
             "data": response_data,
         }, status=status.HTTP_200_OK)
+
 
     def post(self, request, card_number):
         """Update the status of an individual document"""
