@@ -441,7 +441,7 @@ class HRFeedbackCreateAPIView(APIView):
             feedback_obj = models.HRFeedback.objects.get(card_number=mbrcardno)
         except models.HRFeedback.DoesNotExist:
             return Response({"success": False,"candidate_name":full_name, "message": "No feedback found for this candidate."},
-                            status=status.HTTP_404_NOT_FOUND)
+                            status=status.HTTP_400_BAD_REQUEST)
 
         serializer = serializers.HRFeedbackSerializer(feedback_obj)
         data = serializer.data
