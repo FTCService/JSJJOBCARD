@@ -17,7 +17,7 @@ class SSOGovernmentTokenAuthentication(BaseAuthentication):
 
         try:
             response = requests.post(
-                settings.AUTH_SERVER_URL + "/goverment/verify-token/",
+                settings.AUTH_SERVER_URL + "/api/goverment/verify-token/",
                 json={"token": token},
                 timeout=5
             )

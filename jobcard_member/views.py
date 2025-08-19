@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from .authentication import SSOMemberTokenAuthentication
 from . import serializers, models
-from jobcard_business.models import JobApplication, Job
+from jobcard_business.models import JobApplication, Job, Feedback
 from jobcard_staff.serializers import JobpostSerializer
 import os
 from urllib.parse import urlparse
@@ -56,48 +56,103 @@ class MbrDocumentsAPI(APIView):
         return Response({"success": True, "data": data}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        operation_description="Upload or update document URLs for the authenticated member",
-        request_body=serializers.MbrDocumentsSerializer,
-        responses={200: serializers.MbrDocumentsSerializer()},tags=["Member"]
+    operation_description="Upload or update document URLs for the authenticated member",
+    request_body=serializers.MbrDocumentsSerializer,
+    responses={200: serializers.MbrDocumentsSerializer()},
+    tags=["Member"]
     )
     def post(self, request):
         """
         Upload or update document URLs for the authenticated member.
-        Automatically saves card_number from request.user.
+        Existing documents are preserved if not included in the request.
+        Only actual documents are tracked in document_status.
         """
-        card_number = request.user.mbrcardno  # Get member's card number
+        card_number = request.user.mbrcardno
 
         # Get or create the document instance for this card number
         documents, created = models.MbrDocuments.objects.get_or_create(card_number=card_number)
 
-        serializer = serializers.MbrDocumentsSerializer(documents, data=request.data, partial=True)
+        # Convert existing data to dict
+        existing_data = serializers.MbrDocumentsSerializer(documents).data
+
+        # Initialize or copy existing document_status
+        document_status = documents.document_status or {}
+
+        # Define actual document fields to track
+        document_fields = [
+            "TenthCertificate",
+            "TwelfthCertificate",
+            "GraduationCertificate",
+            "GraduationMarksheet",
+            "PgCertificate",
+            "UpskillCertificate",
+            "ItiCertificate",
+            "ItiMarksheet",
+            "DiplomaCertificate",
+            "DiplomaMarksheet",
+            "CoverLetter",
+            "Resume"
+        ]
+
+        merged_data = {}
+        for field in document_fields:
+            if field in request.data and request.data[field] not in [None, ""]:
+                merged_data[field] = request.data[field]
+                document_status[field] = "pending"  # new upload → pending
+            else:
+                merged_data[field] = existing_data.get(field)
+                if field not in document_status:
+                    document_status[field] = "pending"
+
+        # Include updated document_status in merged_data
+        merged_data["document_status"] = document_status
+
+        # Save updated data
+        serializer = serializers.MbrDocumentsSerializer(documents, data=merged_data, partial=True)
         if serializer.is_valid():
-            serializer.save(card_number=card_number)  # Ensure the card_number is always set
-            return Response({"success": True, "message": "Documents updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+            serializer.save(card_number=card_number)
+            return Response({
+                "success": True,
+                "message": "Documents updated successfully",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
 
         return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     
     
     
 class JoblistAPIView(APIView):
     """
-    API for a member list of job.
+    API for a member list of job with their application status.
     """
     authentication_classes = [SSOMemberTokenAuthentication]
     permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(
-        operation_description="Retrieve a list of all job postings.",
-        responses={200: JobpostSerializer(many=True)},tags=["Member"]
+        operation_description="Retrieve a list of all job postings with the current member's application status.",
+        responses={200: JobpostSerializer(many=True)},
+        tags=["Member"]
     )
     def get(self, request):
         try:
-            jobs = Job.objects.all()
-            serializer = JobpostSerializer(jobs, many=True)
+            member_card = request.user.mbrcardno
+            jobs = Job.objects.all().order_by('-created_at')
+            job_list = []
+
+            for job in jobs:
+                # Check if member has applied to this job
+                application = JobApplication.objects.filter(job=job, member_card=member_card).first()
+                job_data = JobpostSerializer(job).data
+                job_data['status'] = application.status if application else None
+                job_list.append(job_data)
+
             return Response({
                 "success": True,
                 "message": "Job list retrieved successfully.",
-                "data": serializer.data
+                "data": job_list
             }, status=status.HTTP_200_OK)
+
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -345,3 +400,75 @@ class ViewSharedDocumentsAPIView(APIView):
         member = access.member
         data = {field: getattr(member, field) for field in access.selected_fields}
         return Response({"documents": data})
+
+
+
+class FeedbackView(APIView):
+    """
+    Submit feedback or view feedback by card number
+    """
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SSOMemberTokenAuthentication]
+
+    @swagger_auto_schema(
+        operation_summary="Get feedback by user card number and business ID",
+        manual_parameters=[
+            openapi.Parameter(
+                'businessId',
+                openapi.IN_QUERY,
+                description="Business ID",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: serializers.FeedbackSerializer(many=True)}
+    )
+    def get(self, request):
+        business_id = request.query_params.get("businessId")
+        card_number = request.user.mbrcardno
+        member_data = get_member_details_by_card(card_number)
+        full_name = member_data.get('full_name')
+        mobile_number = member_data.get('mobile_number')
+        if not business_id:
+            return Response({"error": "businessId query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        feedbacks = Feedback.objects.filter(card_number=card_number, business_id=business_id).order_by('-created_at')
+        serializer = serializers.FeedbackSerializer(feedbacks, many=True)
+
+        return Response({
+            "full_name": full_name,
+            "mobile_number": mobile_number,
+            "business_id": business_id,
+            "feedbacks": serializer.data
+        }, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(
+        operation_summary="Submit Feedback",
+        request_body=serializers.FeedbackSerializer,
+        responses={201: serializers.FeedbackSerializer}
+    )
+    def post(self, request):
+        business_id = request.query_params.get("businessId")
+        card_number = request.user.mbrcardno
+
+        if not business_id or not card_number:
+            return Response({"error": "Missing businessId or card_number"}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = request.data.copy()
+        data['business_id'] = business_id
+        data['card_number'] = card_number
+
+        serializer = serializers.FeedbackSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Feedback submitted successfully", "data": serializer.data},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    
+
+
+
