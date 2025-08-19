@@ -2,11 +2,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 class MbrDocuments(models.Model):
-    STATUS_CHOICES = [
-        ("pending", "Pending"),
-        ("processing", "Processing"),
-        ("verified", "Verified"),
-    ]
+
     card_number = models.BigIntegerField(unique=True, verbose_name="Member Card Number", null=True, blank=True)
     TenthCertificate = models.TextField(blank=True, null=True)
     TwelfthCertificate = models.TextField(blank=True, null=True)
@@ -21,10 +17,9 @@ class MbrDocuments(models.Model):
     CoverLetter = models.TextField(blank=True, null=True)
     Resume = models.TextField(blank=True, null=True)
     # Status field
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default="pending"
+    document_status = models.JSONField(
+        default=dict,
+        help_text="Store status of each document individually, e.g., {'Resume': 'verified', 'TenthCertificate': 'pending'}"
     )
     # Links
     AdharcardVoterid = models.TextField(blank=True, null=True)
@@ -45,3 +40,26 @@ class DocumentAccess(models.Model):
 
     def is_valid(self):
         return timezone.now() < self.expiry_time
+    
+    
+
+class DocumentVerificationRequest(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("processing", "Processing"),
+        ("verified", "Verified"),
+        ("rejected", "Rejected"),
+    ]
+
+    card_number = models.BigIntegerField(verbose_name="Member Card Number")
+    requested_by = models.IntegerField(verbose_name="Business/HR ID")  # HR or business requesting
+    documents = models.JSONField(
+        default=dict,
+        help_text="List of documents requested for verification with initial status, e.g., {'Resume': 'pending', 'TenthCertificate': 'pending'}"
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.card_number} requested by {self.requested_by}"

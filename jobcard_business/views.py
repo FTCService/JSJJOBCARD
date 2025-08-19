@@ -10,7 +10,7 @@ from jobcard_business.authentication import SSOBusinessTokenAuthentication
 from jobcard_staff.serializers import JobpostSerializer
 from jobcard_business import models, serializers
 from jobcard_member.serializers import MbrDocumentsSerializer
-from jobcard_member.models import MbrDocuments
+from jobcard_member.models import MbrDocuments, DocumentVerificationRequest
 from helpers.utils import get_member_details_by_mobile, get_member_details_by_card, get_business_details_by_id
 
 class JobListBusinessAPIView(APIView):
@@ -232,6 +232,7 @@ class GetMemberDocumentsAPIView(APIView):
 
         # ✅ Decide whether it's a card number or mobile number
         mbrcardno = None
+        full_name = None 
         if len(card_no) == 16 and card_no.isdigit():
             # Directly use as card number
             mbrcardno = card_no
@@ -239,6 +240,7 @@ class GetMemberDocumentsAPIView(APIView):
             # Lookup by mobile number
             member_data = get_member_details_by_mobile(card_no)
             mbrcardno = member_data.get("mbrcardno") if member_data else None
+            full_name = member_data.get("full_name") if member_data else None
         else:
             return Response(
                 {"error": "Invalid input. Provide a valid 16-digit card number or 10-digit mobile number."},
@@ -258,6 +260,7 @@ class GetMemberDocumentsAPIView(APIView):
             return Response({
                 "success": True,
                 "message": "Documents fetched successfully.",
+                "full_name": full_name,
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
 
@@ -266,3 +269,43 @@ class GetMemberDocumentsAPIView(APIView):
                 {"success": False, "message": "Documents not found for this member."},
                 status=status.HTTP_404_NOT_FOUND
             )
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "documents": openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    description="Documents to request verification for, e.g. {'Resume': 'pending', 'TenthCertificate': 'pending'}"
+                ),
+            },
+            required=["documents"]
+        ),
+        responses={201: "Document verification request created"},
+        tags=["Document Management"]
+    )
+    def post(self, request, card_number):
+        """HR can create a document verification request for a staff member"""
+        documents = request.data.get("documents")
+        requested_by = request.user.business_id  # HR user ID
+
+        if not card_number or not documents:
+            return Response({"success": False, "message": "card_number and documents are required"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Create the verification request
+        doc_request = DocumentVerificationRequest.objects.create(
+            card_number=card_number,
+            requested_by=requested_by,
+            documents=documents
+        )
+
+        return Response({
+            "success": True,
+            "message": "Document verification request created successfully",
+            "data": {
+                "id": doc_request.id,
+                "card_number": doc_request.card_number,
+                "documents": doc_request.documents,
+                "status": doc_request.status
+            }
+        }, status=status.HTTP_201_CREATED)
