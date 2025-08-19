@@ -256,11 +256,11 @@ class StaffDocumentVerificationListAPIView(APIView):
         data = []
         for r in requests:
             # Fetch current document statuses
-            try:
-                mbr_docs = MbrDocuments.objects.get(card_number=r.card_number)
-                doc_status = mbr_docs.document_status
-            except MbrDocuments.DoesNotExist:
-                doc_status = {}
+            # try:
+            #     mbr_docs = MbrDocuments.objects.get(card_number=r.card_number)
+            #     doc_status = mbr_docs.document_status
+            # except MbrDocuments.DoesNotExist:
+            #     doc_status = {}
             request_by = get_business_details_by_id(r.requested_by)
             business_name = request_by.get('business_name', 'Unknown') if request_by else 'Unknown'
             data.append({
@@ -270,7 +270,7 @@ class StaffDocumentVerificationListAPIView(APIView):
                 "status": r.status,
                 "requested_by": business_name ,
                 "requested_at": r.created_at,
-                "document_status": doc_status  # Current status from MbrDocuments
+                # "document_status": doc_status  # Current status from MbrDocuments
             })
 
         return Response({
@@ -287,15 +287,43 @@ class StaffUpdateDocumentStatusAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, card_number):
-        """View all requested document verifications for the logged-in staff"""
-        
+        """View all requested document verifications + only requested member documents"""
+        try:
+            mbr_docs = MbrDocuments.objects.get(card_number=card_number)
+            mbr_docs_data = MbrDocumentsSerializer(mbr_docs).data
+        except MbrDocuments.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Member documents not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch verification requests
         requests = DocumentVerificationRequest.objects.filter(card_number=card_number)
-        data = [{"id": r.id, "documents": r.documents, "status": r.status} for r in requests]
+        if not requests.exists():
+            return Response({
+                "success": False,
+                "message": "No verification requests found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        response_data = []
+        for req in requests:
+            requested_docs = req.documents  # dict of requested docs
+            matched_docs = {
+                doc_name: mbr_docs_data.get(doc_name, "")  # pick only requested ones
+                for doc_name in requested_docs.keys()
+            }
+
+            response_data.append({
+                "id": req.id,
+                "documents_requested": requested_docs,
+                "status": req.status,
+                "requested_files": matched_docs,   # ✅ only requested files with URL
+            })
 
         return Response({
             "success": True,
             "message": "Document verification requests fetched.",
-            "data": data
+            "data": response_data,
         }, status=status.HTTP_200_OK)
 
     def post(self, request, card_number):

@@ -157,3 +157,24 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.card_number} - {self.happiness_rating}/10"
+    
+    
+class HRFeedback(models.Model):
+    candidate_name = models.CharField(max_length=255, verbose_name="Candidate Name")
+    card_number = models.BigIntegerField(verbose_name="Card Number")
+    company_name = models.CharField(max_length=255, verbose_name="Company Name")
+    job_title = models.CharField(max_length=255, verbose_name="Job Title")
+    employee_id = models.CharField(max_length=100, verbose_name="Employee ID")
+    feedback_questions = models.JSONField(
+        default=dict,
+        help_text="Store feedback questions and answers as JSON, e.g., {'Question 1': 'Answer'}"
+    )
+    comments = models.TextField(blank=True, null=True, verbose_name="Additional Comments")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    requested_by = models.IntegerField(verbose_name="Business Id")
+
+    def __str__(self):
+        return f"{self.candidate_name} - {self.company_name} - {self.job_title}"

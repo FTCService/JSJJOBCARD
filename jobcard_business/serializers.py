@@ -39,3 +39,9 @@ class JobApplicationListForBusinessSerializer(serializers.ModelSerializer):
             return member_data.get('email')
         except Exception:
             return None
+        
+        
+class HRFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.HRFeedback
+        fields = '__all__'
