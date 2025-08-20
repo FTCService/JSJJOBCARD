@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from jobcard_business.models import Job, JobApplication
+from jobcard_business.models import Job, JobApplication, HRFeedback
 from . import serializers
 from .authentication import SSOUserTokenAuthentication
 from jobcard_member.models import MbrDocuments, DocumentVerificationRequest
@@ -364,3 +364,41 @@ class StaffUpdateDocumentStatusAPIView(APIView):
             "message": f"{document_name} updated to {status_value}",
             "document_status": doc_status
         }, status=status.HTTP_200_OK)
+
+
+class HRFeedbackListAPI(APIView):
+    """
+    API for staff to view all HR feedbacks.
+    Each record contains candidate details and multiple company feedbacks.
+    """
+    # authentication_classes = [SSOUserTokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Get list of all HR Feedback records (for staff use).",
+        responses={200: "List of all candidate feedbacks"},
+        tags=["HR Feedback"]
+    )
+    def get(self, request):
+        try:
+            feedbacks = HRFeedback.objects.all().values(
+                "id", "candidate_name", "card_number", "feedbacks", "created_at", "updated_at"
+            )
+
+            if not feedbacks:
+                return Response({
+                    "success": False,
+                    "message": "No feedback records found."
+                }, status=404)
+
+            return Response({
+                "success": True,
+                "count": feedbacks.count(),
+                "data": list(feedbacks)
+            }, status=200)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": f"Something went wrong: {str(e)}"
+            }, status=500)

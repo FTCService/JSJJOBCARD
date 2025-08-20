@@ -8,7 +8,9 @@ urlpatterns = [
     
     path('document-verification/list/', views.StaffDocumentVerificationListAPIView.as_view(), name='staff-document-requests'),
     path('document/verification/status/<str:card_number>/', views.StaffUpdateDocumentStatusAPIView.as_view(), name='staff-update-document-status'),
-
+    path('hr-feedbacks/', views.HRFeedbackListAPI.as_view(), name='hr-feedback-list'),
+    
+    
     path('job_mitra/applied/list/<int:job_id>/', job_mitra_api.ApplicationListOfStudent.as_view(), name='job_mitra-applied-list'),
     path('jobmitra/member-details/', job_mitra_api.GetMemberDetailsByCardApi.as_view(), name='get-member-details'),
     path('jobmitra/apply-for-member/', job_mitra_api.ApplyJobForMemberAPIView.as_view(), name='apply-job-for-member'),
