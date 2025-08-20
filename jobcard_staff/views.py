@@ -371,8 +371,8 @@ class HRFeedbackListAPI(APIView):
     API for staff to view all HR feedbacks.
     Each record contains candidate details and multiple company feedbacks.
     """
-    # authentication_classes = [SSOUserTokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [SSOUserTokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         operation_description="Get list of all HR Feedback records (for staff use).",
