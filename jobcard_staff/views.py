@@ -10,8 +10,7 @@ from .authentication import SSOUserTokenAuthentication
 from jobcard_member.models import MbrDocuments, DocumentVerificationRequest
 from jobcard_member.serializers import MbrDocumentsSerializer
 from helpers.utils import get_business_details_by_id
-
-
+from helpers.pagination import paginate
 class JobListCreateAPIView(APIView):
     """
     API to list all jobs or create a new job post.
@@ -20,18 +19,30 @@ class JobListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="Retrieve a list of all job postings.",
-        responses={200: serializers.JobpostSerializer(many=True)},tags=["Staff"]
+        operation_description="Retrieve a paginated list of all job postings.",
+        responses={200: serializers.JobpostSerializer(many=True)},
+        tags=["Staff"]
     )
     def get(self, request):
         try:
-            jobs = Job.objects.all()
-            serializer = serializers.JobpostSerializer(jobs, many=True)
+            jobs = Job.objects.all().order_by("-id")  # order by latest
+
+            # Use paginate helper
+            page, pagination_meta = paginate(
+                request,
+                jobs,
+                data_per_page=int(request.GET.get("page_size", 10))
+            )
+
+            serializer = serializers.JobpostSerializer(page, many=True)
+
             return Response({
                 "success": True,
                 "message": "Job list retrieved successfully.",
-                "data": serializer.data
+                "data": serializer.data,
+                "pagination_meta_data": pagination_meta
             }, status=status.HTTP_200_OK)
+
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -245,7 +256,7 @@ class MbrDocumentsAPI(APIView):
 
 class StaffDocumentVerificationListAPIView(APIView):
     """
-    View all requested document verifications.
+    View all requested document verifications (paginated).
     """
     authentication_classes = [SSOUserTokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -253,31 +264,34 @@ class StaffDocumentVerificationListAPIView(APIView):
     def get(self, request):
         requests = DocumentVerificationRequest.objects.all().order_by('-created_at')
 
+        # Use your custom paginate function
+        page, pagination_meta = paginate(
+            request,
+            requests,
+            data_per_page=int(request.GET.get("page_size", 10))
+        )
+
         data = []
-        for r in requests:
-            # Fetch current document statuses
-            # try:
-            #     mbr_docs = MbrDocuments.objects.get(card_number=r.card_number)
-            #     doc_status = mbr_docs.document_status
-            # except MbrDocuments.DoesNotExist:
-            #     doc_status = {}
+        for r in page:
             request_by = get_business_details_by_id(r.requested_by)
             business_name = request_by.get('business_name', 'Unknown') if request_by else 'Unknown'
+
             data.append({
                 "request_id": r.id,
                 "card_number": r.card_number,
                 "documents": r.documents,  # JSON of requested documents
                 "status": r.status,
-                "requested_by": business_name ,
+                "requested_by": business_name,
                 "requested_at": r.created_at,
-                # "document_status": doc_status  # Current status from MbrDocuments
             })
 
         return Response({
-            "success": True,
+            "status": 200,
             "message": "Document verification requests fetched successfully.",
-            "data": data
+            "data": data,
+            "pagination_meta_data": pagination_meta
         }, status=status.HTTP_200_OK)
+
 
 
 
