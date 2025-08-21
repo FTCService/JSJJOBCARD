@@ -11,34 +11,48 @@ from jobcard_staff.serializers import JobpostSerializer
 from jobcard_business import models
 from jobcard_member.serializers import JobApplicationListSerializer
 from helpers.utils import get_member_details_by_card
-
+from helpers.pagination import paginate
 
 
 class JobListInstituteAPI(APIView):
     """
-    API to list all jobs or create a new job post.
+    API to list all jobs for Institute (paginated).
     """
     authentication_classes = [SSOBusinessTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="Retrieve a list of all job postings.",
-        responses={200: JobpostSerializer(many=True)},tags=["Institute"]
+        operation_description="Retrieve a paginated list of all job postings for institutes.",
+        responses={200: JobpostSerializer(many=True)},
+        tags=["Institute"]
     )
     def get(self, request):
         try:
-            jobs = models.Job.objects.all()
+            jobs = models.Job.objects.all().order_by("-id")
             total_jobs = jobs.count()
-            serializer = JobpostSerializer(jobs, many=True)
+
+            # Pagination
+            page, pagination_meta = paginate(
+                request,
+                jobs,
+                data_per_page=int(request.GET.get("page_size", 20))
+            )
+
+            serializer = JobpostSerializer(page, many=True)
+
             return Response({
+                "status": 200,
                 "success": True,
                 "message": "Job list retrieved successfully.",
-                "total_jobs":total_jobs,
-                "data": serializer.data
+                "total_jobs": total_jobs,
+                "data": serializer.data,
+                "pagination_meta_data": pagination_meta
             }, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response(
+                {"success": False, "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     
 class JobApplicationListInstituteAPIView(APIView):
