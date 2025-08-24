@@ -11,6 +11,7 @@ from jobcard_member.models import MbrDocuments, DocumentVerificationRequest
 from jobcard_member.serializers import MbrDocumentsSerializer
 from helpers.utils import get_business_details_by_id
 from helpers.pagination import paginate
+from helpers.email import send_template_email
 class JobListCreateAPIView(APIView):
     """
     API to list all jobs or create a new job post.
@@ -182,6 +183,29 @@ class JobApplicationListOfStudent(APIView):
             application = JobApplication.objects.get(id=application_id, job_id=job_id)
             application.status = new_status
             application.save()
+            
+            member_data = get_business_details_by_id(application.member_card)
+            card_number = member_data.get("card_number")
+            email = member_data.get("email")
+            full_name = member_data.get("full_name")
+
+            # Prepare email context
+            context = {
+                "applicant_name": full_name,
+                "job_title": application.job.title,   # adjust if job has another field
+                "status": new_status,
+                "company_name": "JSJCard",
+                "card_number": card_number,           # optional, if you want to show in email
+            }
+
+            # Send email to applicant
+            send_template_email(
+                subject="Job Application Status Update - JSJCard",
+                template_name="email_template/job_status.html",
+                context=context,
+                recipient_list=[email]  # sending to member email
+            )
+
 
             return Response({
                 "success": True,
