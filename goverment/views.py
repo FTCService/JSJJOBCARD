@@ -102,7 +102,7 @@ class DashboardSummaryAPIView(APIView):
     def get(self, request):
         try:
             # 1️⃣ Request institute and company data from AUTH server
-            auth_response = requests.get(f"{settings.AUTH_SERVER_URL}/admin/dashboard/business-summary/")
+            auth_response = requests.get(f"{settings.AUTH_SERVER_URL}/api/admin/dashboard/business-summary/")
             if auth_response.status_code != 200:
                 return Response({
                     "success": False,

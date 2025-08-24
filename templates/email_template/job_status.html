@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Job Application Status Update</title>
+</head>
+<body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f4f4;">
+
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#f4f4f4">
+    <tr>
+      <td align="center" style="padding: 30px 10px;">
+        
+        <!-- Card -->
+        <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff" style="border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden;">
+          <tr>
+            <td align="center" bgcolor="#007bff" style="padding: 20px;">
+              <h2 style="color:#ffffff; margin:0;">JSJCard Careers</h2>
+            </td>
+          </tr>
+          
+          <tr>
+            <td style="padding: 30px; color:#333333; font-size:16px; line-height:1.6;">
+              <p style="margin:0 0 15px;">Hello <b>{{ applicant_name }}</b>,</p>
+              
+              <p style="margin:0 0 15px;">
+                Your application for the position of 
+                <b style="color:#007bff;">{{ job_title }}</b> 
+                has been updated to:
+                <span style="display:inline-block; background:#e9f5ff; color:#007bff; font-weight:bold; padding:5px 10px; border-radius:5px;">
+                  {{ status }}
+                </span>
+              </p>
+
+              <p style="margin:0 0 15px;">
+                <b>Card Number:</b> {{ card_number }}
+              </p>
+              
+              <p style="margin:0 0 15px;">We appreciate your interest and will keep you updated on further steps.</p>
+
+              <p style="margin:0;">Thanks,<br><b>{{ company_name }}</b> Team</p>
+            </td>
+          </tr>
+          
+          <tr>
+            <td bgcolor="#f4f4f4" align="center" style="padding: 15px; font-size:12px; color:#666;">
+              © {{ company_name }} - All Rights Reserved
+            </td>
+          </tr>
+        </table>
+        <!-- End Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
