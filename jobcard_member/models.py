@@ -5,7 +5,7 @@ class MbrDocuments(models.Model):
 
     card_number = models.BigIntegerField(unique=True, verbose_name="Member Card Number", null=True, blank=True)
     TenthCertificate = models.TextField(blank=True, null=True)
-    TwelfthCertificate = models.TextField(blank=True, null=True)
+    TwelthCertificate = models.TextField(blank=True, null=True)
     GraduationCertificate = models.TextField(blank=True, null=True)
     GraduationMarksheet = models.TextField(blank=True, null=True)
     PgCertificate = models.TextField(blank=True, null=True)

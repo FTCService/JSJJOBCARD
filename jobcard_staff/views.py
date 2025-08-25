@@ -9,7 +9,7 @@ from . import serializers
 from .authentication import SSOUserTokenAuthentication
 from jobcard_member.models import MbrDocuments, DocumentVerificationRequest
 from jobcard_member.serializers import MbrDocumentsSerializer
-from helpers.utils import get_business_details_by_id
+from helpers.utils import get_business_details_by_id, get_member_details_by_card
 from helpers.pagination import paginate
 from helpers.email import send_template_email
 class JobListCreateAPIView(APIView):
@@ -184,8 +184,7 @@ class JobApplicationListOfStudent(APIView):
             application.status = new_status
             application.save()
             
-            member_data = get_business_details_by_id(application.member_card)
-            card_number = member_data.get("card_number")
+            member_data = get_member_details_by_card(application.member_card)
             email = member_data.get("email")
             full_name = member_data.get("full_name")
 
@@ -194,8 +193,8 @@ class JobApplicationListOfStudent(APIView):
                 "applicant_name": full_name,
                 "job_title": application.job.title,   # adjust if job has another field
                 "status": new_status,
-                "company_name": "JSJCard",
-                "card_number": card_number,           # optional, if you want to show in email
+                "company_name": application.job.company_name,
+                "card_number": application.member_card,           # optional, if you want to show in email
             }
 
             # Send email to applicant
