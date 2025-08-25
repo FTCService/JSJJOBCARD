@@ -239,7 +239,8 @@ class GetMemberDocumentsAPIView(APIView):
         elif len(card_no) == 10 and card_no.isdigit():
             # Lookup by mobile number
             member_data = get_member_details_by_mobile(card_no)
-            mbrcardno = member_data.get("mbrcardno") if member_data else None
+            mbrcardno = member_data.get("mbrcardno") 
+            print(mbrcardno,"mbrcardno")
             full_name = member_data.get("full_name") if member_data else None
         else:
             return Response(
@@ -432,6 +433,7 @@ class HRFeedbackCreateAPIView(APIView):
             member_data = get_member_details_by_mobile(card_or_mobile)
             mbrcardno = member_data.get("mbrcardno") if member_data else None
             full_name = member_data.get("full_name") if member_data else None
+            mobile_number = member_data.get("mobile_number") if member_data else None
         else:
             return Response({"success": False, "message": "Provide a valid 16-digit card number or 10-digit mobile number."},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -443,13 +445,17 @@ class HRFeedbackCreateAPIView(APIView):
         try:
             feedback_obj = models.HRFeedback.objects.get(card_number=mbrcardno)
         except models.HRFeedback.DoesNotExist:
-            return Response({"success": False,"candidate_name":full_name, "message": "No feedback found for this candidate."},
+            return Response({"success": False,"candidate_name":full_name,"card_number":mbrcardno,"mobile_number":mobile_number,"company_name":request.user.business_name, "message": "No feedback found for this candidate."},
                             status=status.HTTP_400_BAD_REQUEST)
 
         serializer = serializers.HRFeedbackSerializer(feedback_obj)
         data = serializer.data
          # Auto-fill candidate_name
+        data["mobile_number"] = mobile_number
         data["candidate_name"] = feedback_obj.candidate_name or full_name
+        data["company_name"] = request.user.business_name 
+        
+        
         return Response({
             "success": True,
             "message": "Feedbacks fetched successfully.",
