@@ -81,7 +81,7 @@ class MbrDocumentsAPI(APIView):
         # Define actual document fields to track
         document_fields = [
             "TenthCertificate",
-            "TwelfthCertificate",
+            "TwelthCertificate",
             "GraduationCertificate",
             "GraduationMarksheet",
             "PgCertificate",
@@ -91,6 +91,10 @@ class MbrDocumentsAPI(APIView):
             "DiplomaCertificate",
             "DiplomaMarksheet",
             "CoverLetter",
+            "AdharcardVoterid",
+            "LinkedinUrl",
+            "GithubUrl",
+            "OtherLink",
             "Resume"
         ]
 
