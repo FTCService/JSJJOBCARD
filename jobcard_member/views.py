@@ -20,6 +20,7 @@ import re
 from helpers.email import send_template_email
 from django.utils import timezone
 from datetime import timedelta
+from helpers.utils import get_member_job_prifile_by_card
 
 class MbrDocumentsAPI(APIView):
     """
@@ -177,7 +178,16 @@ class JobDetailAPIView(APIView):
     def get(self, request, job_id):
         try:
             member_card = request.user.mbrcardno
-
+            job_profile = get_member_job_prifile_by_card(member_card)
+            if not job_profile or not isinstance(job_profile, dict):
+                return Response({
+                    "status": False,
+                    "message": "Unable to fetch member job profile."
+                }, status=status.HTTP_200_OK)
+            education_details = job_profile.get("EducationDetails", {})
+            # Extract instituteId and universityName safely
+            institute_id = education_details.get("instituteId")
+            university_name = education_details.get("universityName")
             # Get Job
             job = Job.objects.get(id=job_id)
             serializer = JobpostSerializer(job)
@@ -204,6 +214,8 @@ class JobDetailAPIView(APIView):
                 "message": "Job detail retrieved successfully.",
                 "is_resume": is_resume,
                 "resume": resume_name,
+                "instituteId": institute_id,
+                "universityName": university_name,
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
 
