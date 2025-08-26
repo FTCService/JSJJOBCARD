@@ -188,6 +188,8 @@ class JobDetailAPIView(APIView):
             # Extract instituteId and universityName safely
             institute_id = education_details.get("instituteId")
             university_name = education_details.get("universityName")
+            # ✅ Boolean flag for institute
+            is_institute = bool(institute_id)
             # Get Job
             job = Job.objects.get(id=job_id)
             serializer = JobpostSerializer(job)
@@ -216,6 +218,7 @@ class JobDetailAPIView(APIView):
                 "resume": resume_name,
                 "instituteId": institute_id,
                 "universityName": university_name,
+                "is_institute": is_institute,
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
 
