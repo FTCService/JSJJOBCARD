@@ -122,6 +122,32 @@ class JobDetailBusinessAPIView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    @swagger_auto_schema(
+        operation_description="Update a job by its ID.",
+        request_body=JobpostSerializer,
+        responses={200: JobpostSerializer()},
+        tags=["Business"]
+    )
+    def put(self, request, job_id):
+        """Update a job by ID (full update)"""
+        try:
+            job = models.Job.objects.get(id=job_id)
+            serializer = JobpostSerializer(job, data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "message": "Job updated successfully.",
+                    "data": serializer.data
+                }, status=status.HTTP_200_OK)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except models.Job.DoesNotExist:
+            return Response({"error": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class JobApplicationListBusinessAPI(APIView):

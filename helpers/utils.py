@@ -6,7 +6,19 @@ import pytz
 from datetime import datetime
 from django.conf import settings
 
-
+def get_member_job_prifile_by_card(card_number):
+    """
+    Fetches member job profile details by member ID.
+    """
+    try:
+        response = requests.get(settings.AUTH_SERVER_URL + "/member/job/profile/", params={"card_number": card_number})
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except requests.RequestException as e:
+        print(f"Error contacting auth service: {e}")
+        return None
+    
 # AUTH_SERVICE_MOBILE_URL =  settings.AUTH_SERVER_URL + "/member-details/",
 
 def get_member_details_by_mobile(mobile_number):
