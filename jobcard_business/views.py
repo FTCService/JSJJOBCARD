@@ -35,7 +35,8 @@ class JobListBusinessAPIView(APIView):
                     "success": False,
                     "message": "Authenticated user is not associated with a business."
                 }, status=status.HTTP_400_BAD_REQUEST)
-
+            for job in models.Job.objects.filter(is_active=True):
+                job.check_and_deactivate()
             jobs = models.Job.objects.filter(business_id=business).order_by('-created_at')
             serializer = JobpostSerializer(jobs, many=True)
 
