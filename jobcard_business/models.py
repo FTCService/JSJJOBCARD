@@ -111,7 +111,12 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.title} at {self.company_name}"
-    
+    def check_and_deactivate(self):
+        """Deactivate job if end date has passed"""
+        if self.application_end_date and self.application_end_date < timezone.now().date():
+            if self.is_active:
+                self.is_active = False
+                self.save(update_fields=["is_active"])
 
 # job/models.py
 class JobApplication(models.Model):

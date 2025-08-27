@@ -26,8 +26,12 @@ class JobListCreateAPIView(APIView):
     )
     def get(self, request):
         try:
-            jobs = Job.objects.all().order_by("-id")  # order by latest
-
+            if request.user.is_jobmitra:
+                for job in Job.objects.filter(is_active=True):
+                    job.check_and_deactivate()
+                jobs = Job.objects.filter().order_by("-id")  # order by latest
+            else:
+                jobs = Job.objects.all().order_by('-id')
             # Use paginate helper
             page, pagination_meta = paginate(
                 request,
