@@ -27,7 +27,9 @@ class JobListGovermentAPIView(APIView):
     )
     def get(self, request):
         try:
-            jobs = Job.objects.all()
+            for job in Job.objects.filter(is_active=True):
+                job.check_and_deactivate()
+            jobs = Job.objects.all().order_by('-created_at')
             serializer = JobpostSerializer(jobs, many=True)
             return Response({
                 "success": True,
@@ -114,7 +116,8 @@ class DashboardSummaryAPIView(APIView):
             total_company = auth_data.get("companies", 0)
             total_students = auth_data.get("total_students", 0)
             # 2️⃣ Jobs
-            jobs = Job.objects.count()
+        
+            jobs = Job.objects.all().count()
 
             # 3️⃣ Placed Students (status = 'selected')
             selected_apps = JobApplication.objects.filter(status='selected').count()

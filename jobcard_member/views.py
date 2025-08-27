@@ -142,6 +142,8 @@ class JoblistAPIView(APIView):
     def get(self, request):
         try:
             member_card = request.user.mbrcardno
+            for job in Job.objects.filter(is_active=True):
+                job.check_and_deactivate()
             jobs = Job.objects.all().order_by('-created_at')
             job_list = []
 
