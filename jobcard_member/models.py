@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
+
 class MbrDocuments(models.Model):
 
     card_number = models.BigIntegerField(unique=True, verbose_name="Member Card Number", null=True, blank=True)
