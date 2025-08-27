@@ -29,7 +29,7 @@ class JobListCreateAPIView(APIView):
             if request.user.is_jobmitra:
                 for job in Job.objects.filter(is_active=True):
                     job.check_and_deactivate()
-                jobs = Job.objects.filter().order_by("-id")  # order by latest
+                jobs = Job.objects.filter(is_active=True).order_by("-id")  # order by latest
             else:
                 jobs = Job.objects.all().order_by('-id')
             # Use paginate helper
