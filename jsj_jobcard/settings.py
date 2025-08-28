@@ -95,7 +95,7 @@ DATABASES = {
         "USER": env_vars["DB_USER"],
         "PASSWORD": env_vars["DB_PASSWORD"],
         "HOST": env_vars["DB_HOST"],
-        "PORT": "5432",
+        "PORT": env_vars["DB_PORT"],
     }
 }
 
