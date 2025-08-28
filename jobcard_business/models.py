@@ -111,7 +111,12 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.title} at {self.company_name}"
-    
+    def check_and_deactivate(self):
+        """Deactivate job if end date has passed"""
+        if self.application_end_date and self.application_end_date < timezone.now().date():
+            if self.is_active:
+                self.is_active = False
+                self.save(update_fields=["is_active"])
 
 # job/models.py
 class JobApplication(models.Model):
@@ -142,3 +147,44 @@ class JobApplication(models.Model):
         return f"{self.member_card} applied to {self.job.title}"
 
     
+
+class Feedback(models.Model):
+    HAPPINESS_CHOICES = [(i, str(i)) for i in range(1, 11)]  # 1 to 10 rating
+
+    card_number = models.BigIntegerField(verbose_name="Member Card Number")
+    business_id = models.IntegerField( verbose_name="Business ID", blank=True, null=True)
+    happiness_rating = models.IntegerField(choices=HAPPINESS_CHOICES, verbose_name="Happiness Rating")
+    has_issues = models.BooleanField(verbose_name="Facing any issues?")
+    issues_detail = models.TextField(blank=True, null=True, verbose_name="Issue Details")
+    liked_most = models.TextField(blank=True, null=True, verbose_name="What do you like most?")
+    suggestions = models.TextField(blank=True, null=True, verbose_name="Suggestions for improvement")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.card_number} - {self.happiness_rating}/10"
+    
+    
+class HRFeedback(models.Model):
+    candidate_name = models.CharField(max_length=255, verbose_name="Candidate Name")
+    card_number = models.BigIntegerField(unique=True, verbose_name="Card Number")  # unique per candidate
+    feedbacks = models.JSONField(default=list,help_text="""Store multiple company feedbacks as a list of dicts. 
+    Each dict can include company info, job info, feedback, comments, and business ID, e.g.:
+
+    [
+        {
+            'company_name': 'ABC',
+            'job_title': 'Developer',
+            'employee_id': 'E123',
+            'feedback_questions': {'Question 1': 'Answer'},
+            'comments': 'Good candidate',
+            'business_id': 101365
+        },
+   
+    ]
+    """
+)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.candidate_name} - {self.card_number}"

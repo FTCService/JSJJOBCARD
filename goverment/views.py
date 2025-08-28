@@ -27,7 +27,9 @@ class JobListGovermentAPIView(APIView):
     )
     def get(self, request):
         try:
-            jobs = Job.objects.all()
+            for job in Job.objects.filter(is_active=True):
+                job.check_and_deactivate()
+            jobs = Job.objects.all().order_by('-created_at')
             serializer = JobpostSerializer(jobs, many=True)
             return Response({
                 "success": True,
@@ -102,7 +104,7 @@ class DashboardSummaryAPIView(APIView):
     def get(self, request):
         try:
             # 1️⃣ Request institute and company data from AUTH server
-            auth_response = requests.get(f"{settings.AUTH_SERVER_URL}/admin/dashboard/business-summary/")
+            auth_response = requests.get(f"{settings.AUTH_SERVER_URL}/api/admin/dashboard/business-summary/")
             if auth_response.status_code != 200:
                 return Response({
                     "success": False,
@@ -114,7 +116,8 @@ class DashboardSummaryAPIView(APIView):
             total_company = auth_data.get("companies", 0)
             total_students = auth_data.get("total_students", 0)
             # 2️⃣ Jobs
-            jobs = Job.objects.count()
+        
+            jobs = Job.objects.all().count()
 
             # 3️⃣ Placed Students (status = 'selected')
             selected_apps = JobApplication.objects.filter(status='selected').count()
@@ -189,7 +192,85 @@ class PlacedStudentListAPIView(APIView):
                 "error": str(e)
             }, status=500)
             
-            
+
+
+class MemberJobApplicationsAPIView(APIView):
+    """
+    API to get all jobs applied by a member (using member_card)
+    """
+    authentication_classes = [SSOGovernmentTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Retrieve all job applications by member_card.",
+        manual_parameters=[
+            openapi.Parameter(
+                'member_card',
+                openapi.IN_QUERY,
+                description="Member Card Number",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="List of job applications for given member",
+                examples={
+                    "application/json": {
+                        "success": True,
+                        "total_applications": 2,
+                        "applications": [
+                            {
+                                "job_title": "Software Engineer",
+                                "company_name": "TechCorp",
+                                "applied_at": "2025-08-25T10:45:00Z",
+                                "status": "under_review"
+                            },
+                            {
+                                "job_title": "Data Analyst",
+                                "company_name": "DataWorks",
+                                "applied_at": "2025-08-20T14:30:00Z",
+                                "status": "selected"
+                            }
+                        ]
+                    }
+                }
+            )
+        },
+        tags=["Member"]
+    )
+    def get(self, request):
+        try:
+            member_card = request.query_params.get("member_card")
+            if not member_card:
+                return Response({"success": False, "message": "member_card is required"}, status=400)
+
+            applications = JobApplication.objects.filter(member_card=member_card).select_related("job")
+
+            application_list = [
+                {
+                    "job_title": app.job.title,
+                    "company_name": app.job.company_name,
+                    "applied_at": app.applied_at,
+                    "status": app.status
+                }
+                for app in applications
+            ]
+
+            return Response({
+                "success": True,
+                "total_applications": applications.count(),
+                "applications": application_list
+            }, status=200)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": "Server error",
+                "error": str(e)
+            }, status=500)
+
+
 class JobCountByBusinessAPIView(APIView):
     """
     Returns number of jobs posted by a business.
