@@ -27,7 +27,7 @@ class SSOUserTokenAuthentication(BaseAuthentication):
                 employee_id=data["employee_id"],
                 full_name=data["full_name"],
                 email=data["email"],
-                
+                is_jobmitra=data.get("is_jobmitra", False),
             )
 
             return (user, None)
@@ -38,13 +38,13 @@ class SSOUserTokenAuthentication(BaseAuthentication):
         
 
 class AuthenticatedAdminUser:
-    def __init__(self, id, employee_id, full_name, email):
+    def __init__(self, id, employee_id, full_name, email , is_jobmitra=False):
         self.id = id
         self.employee_id = employee_id
         self.full_name = full_name
         self.email = email
         self.is_authenticated = True  # Required by DRF
-
+        self.is_jobmitra = is_jobmitra
     def __str__(self):
         return f"User {self.employee_id}"
     

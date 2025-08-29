@@ -25,11 +25,11 @@ class JobListCreateAPIView(APIView):
         tags=["Staff"]
     )
     def get(self, request):
-        try:
+        # try:
             if request.user.is_jobmitra:
                 for job in Job.objects.filter(is_active=True):
                     job.check_and_deactivate()
-                jobs = Job.objects.filter(is_active=True).order_by("-id")  # order by latest
+                jobs = Job.objects.filter().order_by("-id")  # order by latest
             else:
                 jobs = Job.objects.all().order_by('-id')
             # Use paginate helper
@@ -48,8 +48,8 @@ class JobListCreateAPIView(APIView):
                 "pagination_meta_data": pagination_meta
             }, status=status.HTTP_200_OK)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # except Exception as e:
+        #     return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(
         operation_description="Create a new job post.",
