@@ -167,22 +167,26 @@ class Feedback(models.Model):
 class HRFeedback(models.Model):
     candidate_name = models.CharField(max_length=255, verbose_name="Candidate Name")
     card_number = models.BigIntegerField(unique=True, verbose_name="Card Number")  # unique per candidate
-    feedbacks = models.JSONField(default=list,help_text="""Store multiple company feedbacks as a list of dicts. 
-    Each dict can include company info, job info, feedback, comments, and business ID, e.g.:
+    feedbacks = models.JSONField(
+        default=list,
+        help_text="""Store multiple company feedbacks as a list of dicts. 
+        Each dict can include company info, job info, feedback, comments, and business ID, e.g.:
 
-    [
-        {
-            'company_name': 'ABC',
-            'job_title': 'Developer',
-            'employee_id': 'E123',
-            'feedback_questions': {'Question 1': 'Answer'},
-            'comments': 'Good candidate',
-            'business_id': 101365
-        },
-   
-    ]
-    """
-)
+        [
+            {
+                'company_name': 'ABC',
+                'job_title': 'Developer',
+                'employee_id': 'E123',
+                'feedback_questions': {'Question 1': 'Answer'},
+                'comments': 'Good candidate',
+                'business_id': 101365,
+                'department_role': 'IT',
+                'date_of_joining': '2022-01-01',
+                'last_working_day': '2023-01-01'
+            },
+        ]
+        """
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

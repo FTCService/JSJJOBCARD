@@ -363,7 +363,7 @@ class HRFeedbackCreateAPIView(APIView):
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
-                'card_or_mobile', openapi.IN_PATH,
+                'card_number', openapi.IN_PATH,
                 description="16-digit card number or 10-digit mobile number",
                 type=openapi.TYPE_STRING,
                 required=True
@@ -377,44 +377,74 @@ class HRFeedbackCreateAPIView(APIView):
                 "company_name": openapi.Schema(type=openapi.TYPE_STRING, description="Company name"),
                 "job_title": openapi.Schema(type=openapi.TYPE_STRING, description="Job title"),
                 "employee_id": openapi.Schema(type=openapi.TYPE_STRING, description="Employee ID"),
-                "feedback_questions": openapi.Schema(type=openapi.TYPE_OBJECT, description="JSON of questions and answers"),
+                "department": openapi.Schema(type=openapi.TYPE_STRING, description="Department/Role"),
+                "date_of_joining": openapi.Schema(type=openapi.TYPE_STRING, format="date", description="Date of joining"),
+                "last_working_day": openapi.Schema(type=openapi.TYPE_STRING, format="date", description="Last working day"),
+                "feedback_questions": openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    description="Feedback questions and answers",
+                    properties={
+                        "mode_of_exit": openapi.Schema(type=openapi.TYPE_STRING),
+                        "notice_period_served": openapi.Schema(type=openapi.TYPE_STRING),
+                        "handover_clearance_completed": openapi.Schema(type=openapi.TYPE_STRING),
+                        "assets_returned": openapi.Schema(type=openapi.TYPE_STRING),
+                        "overall_performance": openapi.Schema(type=openapi.TYPE_STRING),
+                        "target_achievement": openapi.Schema(type=openapi.TYPE_STRING),
+                        "attendance_punctuality": openapi.Schema(type=openapi.TYPE_STRING),
+                        "teamwork_behaviour": openapi.Schema(type=openapi.TYPE_STRING),
+                        "disciplinary_issues": openapi.Schema(type=openapi.TYPE_STRING),
+                        "integrity_trustworthiness": openapi.Schema(type=openapi.TYPE_STRING),
+                        "confidential_information_handling": openapi.Schema(type=openapi.TYPE_STRING),
+                        "rehire_possibility": openapi.Schema(type=openapi.TYPE_STRING),
+                        "final_recommendation": openapi.Schema(type=openapi.TYPE_STRING),
+                    }
+                ),
                 "comments": openapi.Schema(type=openapi.TYPE_STRING, description="Additional comments")
             }
         ),
         responses={201: serializers.HRFeedbackSerializer()},
         tags=["HR Feedback"]
     )
-    def post(self, request, card_or_mobile):
-        card_or_mobile = str(card_or_mobile).strip()
-        card_number = None
+    def post(self, request, card_number):
+        card_number = str(card_number).strip()
 
         # Determine if it's card number or mobile number
-        if len(card_or_mobile) == 16 and card_or_mobile.isdigit():
-            card_number = card_or_mobile
-        elif len(card_or_mobile) == 10 and card_or_mobile.isdigit():
-            member_data = get_member_details_by_mobile(card_or_mobile)
+        if len(card_number) == 16 and card_number.isdigit():
+            card_number = card_number
+        elif len(card_number) == 10 and card_number.isdigit():
+            member_data = get_member_details_by_mobile(card_number)
             if member_data:
                 card_number = member_data.get("mbrcardno")
             else:
-                return Response({"success": False, "message": "Member not found for this mobile number."},
-                                status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {"success": False, "message": "Member not found for this mobile number."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
         else:
-            return Response({"success": False, "message": "Invalid card number or mobile number."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"success": False, "message": "Invalid card number or mobile number."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         candidate_name = request.data.get("candidate_name")
+
         new_feedback = {
             "company_name": request.data.get("company_name"),
             "job_title": request.data.get("job_title"),
             "employee_id": request.data.get("employee_id"),
+            "department": request.data.get("department"),
+            "date_of_joining": request.data.get("date_of_joining"),
+            "last_working_day": request.data.get("last_working_day"),
             "feedback_questions": request.data.get("feedback_questions"),
             "comments": request.data.get("comments"),
             "business_id": request.user.business_id  # HR submitting the feedback
         }
 
         if not card_number or not candidate_name or not new_feedback["company_name"]:
-            return Response({"success": False, "message": "card_number, candidate_name, and company_name are required."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"success": False, "message": "card_number, candidate_name, and company_name are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Get or create feedback object
         feedback_obj, created = models.HRFeedback.objects.get_or_create(
@@ -435,10 +465,11 @@ class HRFeedbackCreateAPIView(APIView):
             "data": serializer.data
         }, status=status.HTTP_201_CREATED)
 
+
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
-                "card_or_mobile",
+                "card_number",
                 openapi.IN_PATH,
                 description="16-digit card number or 10-digit mobile number",
                 type=openapi.TYPE_STRING,
@@ -448,16 +479,16 @@ class HRFeedbackCreateAPIView(APIView):
         responses={200: serializers.HRFeedbackSerializer()},
         tags=["HR Feedback"]
     )
-    def get(self, request, card_or_mobile):
+    def get(self, request, card_number):
         """
         Fetch all feedbacks for a candidate using either card number or mobile number.
         """
         mbrcardno = None
         full_name = None
-        if len(card_or_mobile) == 16 and card_or_mobile.isdigit():
-            mbrcardno = card_or_mobile
-        elif len(card_or_mobile) == 10 and card_or_mobile.isdigit():
-            member_data = get_member_details_by_mobile(card_or_mobile)
+        if len(card_number) == 16 and card_number.isdigit():
+            mbrcardno = card_number
+        elif len(card_number) == 10 and card_number.isdigit():
+            member_data = get_member_details_by_mobile(card_number)
             mbrcardno = member_data.get("mbrcardno") if member_data else None
             full_name = member_data.get("full_name") if member_data else None
             mobile_number = member_data.get("mobile_number") if member_data else None

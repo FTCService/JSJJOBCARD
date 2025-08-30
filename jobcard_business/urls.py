@@ -9,7 +9,7 @@ urlpatterns = [
     path('list/student/<int:job_id>/', views.JobApplicationListBusinessAPI.as_view(), name='business-job-applications'),
     path('documents/details/<int:card_number>/', views.GetMemberDocumentsAPIView.as_view(), name='get-member-documents'),
     
-    path('hr-feedback/<str:card_or_mobile>/',views.HRFeedbackCreateAPIView.as_view(),name='hr-feedback-create'),
+    path('hr-feedback/<str:card_number>/',views.HRFeedbackCreateAPIView.as_view(),name='hr-feedback-create'),
     path('my-feedbacks/', views.HRFeedbackByBusinessAPIView.as_view(), name='hr-my-feedbacks'),
     path('institution-jobs/', institute_api.JobListInstituteAPI.as_view(), name='institution-job-list'),
     path('applied/student/<int:job_id>/', institute_api.JobApplicationListInstituteAPIView.as_view(), name='Institution-job-applications'),
